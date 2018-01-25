@@ -65,10 +65,13 @@ void periodicHandler(){
 }
 
 int main(int argc, char *argv[]){
-    int port;
+    int port1 = 4025;
+    int port2 = 4026;
+    int port3 = 4027;
+    int port4 = 4028;
 
-    cout << "Please set server port: ";
-    cin >> port;
+    //cout << "Please set server port: ";
+    //cin >> port;
 
     /* set event handler */
     server.setOpenHandler(openHandler);
@@ -77,7 +80,8 @@ int main(int argc, char *argv[]){
     //server.setPeriodicHandler(periodicHandler);
 
     /* start the chatroom server, listen to ip '127.0.0.1' and port '8000' */
-    server.startServer(port);
+    printf("loli");
+    server.startServer(port1, port2, port3, port4);
 
     return 1;
 }

@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html>
 <head>
 	<meta charset='UTF-8' />
@@ -6,7 +6,8 @@
 		input, textarea {border:1px solid #CCC;margin:0px;padding:0px}
 
         #ip {line-height:20px}
-        #port {line-height:20px}
+        #port {height:60px}
+        #b {height:90px}
 		#body {max-width:800px;margin:auto}
 		#log {width:100%;height:400px}
 		#message {width:100%;line-height:20px}
@@ -28,10 +29,62 @@
 			Server.send( 'message', text );
 		}
 
+		var port_array = [];
+
+		function chose(node)
+		{
+		     port_array = [];
+		   
+		     var node = document.getElementsByName("port");
+		    
+		    for (var x = 0; x < node.length; x++) {
+		        if (node[x].checked == true) {
+		            port_array.push(node[x].value);
+		           
+                    
+		        }
+		    }
+		    log("port"+port_array+"chosed");
+		   
+		}
+		function connect_all() {
+		    log("connecting ...");
+		    for (var x = 0; x <port_array.length; x++) {
+		        log("connecting to" + port_array[x]);
+		        Server = new FancyWebSocket('ws://' + document.getElementById('ip').value + ':' + port_array[x]);
+		        $('#message').keypress(function(e) {
+		            if ( e.keyCode == 13 && this.value ) {
+		                log( 'You: ' + this.value );
+		                send( this.value );
+
+		                $(this).val('');
+		            }
+		        });
+		        Server.bind('open', function() {
+		            document.getElementById("cntBtn").disabled = true;
+		            log( "Connected." );
+		        });
+
+		        //OH NOES! Disconnection occurred.
+		        Server.bind('close', function( data ) {
+		            document.getElementById("cntBtn").disabled = false;
+		            log( "Disconnected" );
+		        });
+
+		        //Log any messages sent from server
+		        Server.bind('message', function( payload ) {
+		            log( payload );
+		        });
+
+		        Server.connect();
+            
+		    }
+		}
+        
         function connect(){
             log('Connecting...');
 			Server = new FancyWebSocket('ws://' + document.getElementById('ip').value + ':' + document.getElementById('port').value);
-
+			consol.log(document.getElementById('ip'));
 			$('#message').keypress(function(e) {
 				if ( e.keyCode == 13 && this.value ) {
 					log( 'You: ' + this.value );
@@ -53,39 +106,37 @@
 				log( "Disconnected." );
 			});
 
-			//Log any messages sent from server  
+			//Log any messages sent from server
 			Server.bind('message', function( payload ) {
 				log( payload );
 			});
 
 			Server.connect();
         }
-        
-        function Disconnect(){
-            log('Disconnected.');
+        function disconnect() {
+            for (var x = 0; x < port_array.length; x++) {
 
+                Server.disconnect();
+            }
+            
         }
 
 	</script>
 </head>
 
 <body>
-	<div id='body'>
-        Server ip: <input type='text' id='ip' name='ip'>
-        <br>
-        Server port: <input type='checkbox' id='port' name='port'> 
-        <br>
-        <button type="button" id='cntBtn' onclick="connect();">Connect</button>
-        <button type="button" id='cntBtn' onclick="disconnect();">Disonnect</button>
-		<textarea id='log' name='log' readonly='readonly'></textarea><br/>
-		<input type='text' id='message' name='message' />
-	</div>
-</body>
+    <div id='body'>
+        Server ip: <input type='text' id='ip' name='ip'><br />
+        port1<input type="checkbox" name="port" value="4025" onclick="chose(this)" />
+        port2<input type="checkbox" name="port" value="4026" onclick="chose(this)" />
+        port3<input type="checkbox" name="port" value="4027" onclick="chose(this)" />
+        port4<input type="checkbox" name="port" value="4028" onclick="chose(this)" /> <br />
+        <button type="button" name="b" id='cntBtn' onclick="connect_all();">Connect</button>
+        <button type="button" name="b" id='cntBtn' onclick="disconnect();">Disconnect</button>
 
-<script type="text/javascript">
-	    $('.subject-list').on('change', function() {
-		    $('.subject-list').not(this).prop('checked', false);  
-		});
-</script>
+        <textarea id='log' name='log' readonly='readonly'></textarea><br />
+        <input type='text' id='message' name='message' />
+    </div>
+</body>
 
 </html>
