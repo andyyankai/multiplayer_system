@@ -29,29 +29,29 @@
 			Server.send( 'message', text );
 		}
 
-		var port_array = [];
+		var port = 0;
 
 		function chose(node)
 		{
-		     port_array = [];
+
 		   
 		     var node = document.getElementsByName("port");
 		    
 		    for (var x = 0; x < node.length; x++) {
 		        if (node[x].checked == true) {
-		            port_array.push(node[x].value);
+		            port = node[x].value;
+		            break;
 		           
                     
 		        }
 		    }
-		    log("port"+port_array+"chosed");
+
 		   
 		}
 		function connect_all() {
 		    log("connecting ...");
-		    for (var x = 0; x <port_array.length; x++) {
-		        log("connecting to" + port_array[x]);
-		        Server = new FancyWebSocket('ws://' + document.getElementById('ip').value + ':' + port_array[x]);
+		        log("connecting to " + port);
+		        Server = new FancyWebSocket('ws://' + document.getElementById('ip').value + ':' + port);
 		        $('#message').keypress(function(e) {
 		            if ( e.keyCode == 13 && this.value ) {
 		                log( 'You: ' + this.value );
@@ -77,8 +77,7 @@
 		        });
 
 		        Server.connect();
-            
-		    }
+          
 		}
         
         function connect(){
@@ -127,10 +126,10 @@
 <body>
     <div id='body'>
         Server ip: <input type='text' id='ip' name='ip'><br />
-        port1<input type="checkbox" name="port" value="4025" onclick="chose(this)" />
-        port2<input type="checkbox" name="port" value="4026" onclick="chose(this)" />
-        port3<input type="checkbox" name="port" value="4027" onclick="chose(this)" />
-        port4<input type="checkbox" name="port" value="4028" onclick="chose(this)" /> <br />
+        Channel/Port 1<input type="checkbox" name="port" value="4025" onclick="chose(this)" />
+        Channel/Port 2<input type="checkbox" name="port" value="4026" onclick="chose(this)" />
+        Channel/Port 3<input type="checkbox" name="port" value="4027" onclick="chose(this)" />
+        Channel/Port 4<input type="checkbox" name="port" value="4028" onclick="chose(this)" /> <br />
         <button type="button" name="b" id='cntBtn' onclick="connect_all();">Connect</button>
         <button type="button" name="b" id='cntBtn' onclick="disconnect();">Disconnect</button>
 
@@ -138,5 +137,9 @@
         <input type='text' id='message' name='message' />
     </div>
 </body>
-
+<script type="text/javascript">
+$('input[type="checkbox"]').on('change', function() {
+   $(this).siblings('input[type="checkbox"]').prop('checked', false);
+});
+</script>
 </html>
