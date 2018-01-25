@@ -92,7 +92,7 @@ public:
     void setCloseHandler(defaultCallback callback);
     void setMessageHandler(messageCallback callback);
     void setPeriodicHandler(nullCallback callback);
-    void startServer(int port, int port2, int port3, int port4);
+    void startServer(int port);
     void stopServer();
     bool wsSend(int clientID, string message, bool binary = false);
     void wsClose(int clientID);
@@ -103,13 +103,7 @@ private:
     map<int, int> socketIDmap;
     fd_set fds;
     int fdmax;
-    int fdmax2;
-    int fdmax3;
-    int fdmax4;
     int listenfd;
-    int listenfd2;
-    int listenfd3;
-    int listenfd4;
 
     void wsCheckIdleClients();
     bool wsSendClientMessage(int clientID, unsigned char opcode, string message);

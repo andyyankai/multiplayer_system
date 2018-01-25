@@ -82,7 +82,7 @@ int main(int argc, char *argv[]){
 
     /* start the chatroom server, listen to ip '127.0.0.1' and port '8000' */
     
-    server.startServer(port1, port2, port3, port4);
+    server.startServer(port1);
 
     return 1;
 }
