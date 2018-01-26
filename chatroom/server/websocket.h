@@ -92,24 +92,26 @@ public:
     void setCloseHandler(defaultCallback callback);
     void setMessageHandler(messageCallback callback);
     void setPeriodicHandler(nullCallback callback);
-    void startServer(int port, int port2, int port3, int port4);
+    void startServer(int port,int port2, int port3,int port4);
     void stopServer();
     bool wsSend(int clientID, string message, bool binary = false);
     void wsClose(int clientID);
     vector<int> getClientIDs();
+	map<int, int> get_map();
     string getClientIP(int clientID);
 private:
-    vector<wsClient *> wsClients;
-    map<int, int> socketIDmap;
-    fd_set fds;
-    int fdmax;
-    int fdmax2;
-    int fdmax3;
-    int fdmax4;
-    int listenfd;
-    int listenfd2;
-    int listenfd3;
-    int listenfd4;
+	vector<wsClient *> wsClients;
+	map<int, int> socketIDmap;
+	map<int, int> keeptrack;
+	fd_set fds;
+	int fdmax;
+	int fdmax2;
+	int fdmax3;
+	int fdmax4;
+	int listenfd;
+	int listenfd2;
+	int listenfd3;
+	int listenfd4;
 
     void wsCheckIdleClients();
     bool wsSendClientMessage(int clientID, unsigned char opcode, string message);
@@ -122,7 +124,7 @@ private:
     bool wsProcessClientHandshake(int clientID, char *buffer);
     bool wsProcessClient(int clientID, char *buffer, int bufferLength);
     int wsGetNextClientID();
-    void wsAddClient(int socket, in_addr ip);
+    int wsAddClient(int socket, in_addr ip);
 
     defaultCallback callOnOpen;
     defaultCallback callOnClose;
