@@ -71,10 +71,10 @@ int main(int argc, char *argv[]) {
 
 	//cout << "Please set server port: ";
 	//cin >> port;
-	int port1 = 9212;
-	int port2 = 9213;
-	int port3 = 9214;
-	int port4 = 9215;
+	int port1 = 4025;
+	int port2 = 4026;
+	int port3 = 4027;
+	int port4 = 4028;
 
 	/* set event handler */
 	server.setOpenHandler(openHandler);
