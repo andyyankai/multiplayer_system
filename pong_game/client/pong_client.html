@@ -255,6 +255,7 @@
     
     
     <div class="game-box" id="game_canvas">
+    <script src="gameui.js"></script>
     </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
@@ -295,8 +296,19 @@
 		}
 
         function connect(){
-            log('Connecting...<br>');
-			Server = new FancyWebSocket('ws://' + document.getElementById('ip').value + ':' + document.getElementById('port').value);
+        
+        	if (gameState == true)
+        	{
+        		document.getElementById("cntBtn").disabled = false;
+			    document.getElementById("cntBtn").innerHTML = "Connect"
+			    window.scrollTo(0, 0);
+			    Server.disconnect();
+			    gameState = false;
+        	}
+        	else
+        	{
+		    log('Connecting...<br>');
+				Server = new FancyWebSocket('ws://' + document.getElementById('ip').value + ':' + document.getElementById('port').value);
 
 			$(document).keydown(function(event) {
 			    if (event.which == upArrow || event.which == downArrow) {
@@ -308,19 +320,19 @@
 
 			//Let the user know we're connected
 			Server.bind('open', function() {
-                document.getElementById("cntBtn").disabled = true;
-                document.getElementById("cntBtn").innerHTML = "Disconnect"
-                log("Connected.<br>");
-                send(document.getElementById('gameid').value);
-			});
+		        document.getElementById("cntBtn").disabled = true;
+		        document.getElementById("cntBtn").innerHTML = "Disconnect"
+		        log("Connected.<br>");
+		        send(document.getElementById('gameid').value);
+				});
 
 			//OH NOES! Disconnection occurred.
 			Server.bind('close', function( data ) {
-                document.getElementById("cntBtn").disabled = false;
-                document.getElementById("cntBtn").innerHTML = "Connect"
-                window.scrollTo(0, 700);
-				log( "Disconnected.<br>" );
-			});
+		        document.getElementById("cntBtn").disabled = false;
+		        document.getElementById("cntBtn").innerHTML = "Connect"
+		        window.scrollTo(0, 700);
+					log( "Disconnected.<br>" );
+				});
 
 			//Log any messages sent from server
 			Server.bind('message', function( payload ) {
@@ -358,7 +370,9 @@
 			});
 
 			Server.connect();
+			}
         }
+
     </script>
 </body>
 

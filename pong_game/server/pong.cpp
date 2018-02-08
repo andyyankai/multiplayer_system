@@ -86,7 +86,6 @@ void Pong::init() {
 		if (b.x + b.radius < 0) {
 			//restarts game  the ball hits the boarder behind the player (left)
 			init();
-			--s.p;
 			return true;
 		}
 		return false;

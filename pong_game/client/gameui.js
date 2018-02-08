@@ -1,9 +1,9 @@
 var context;
-var HEIGHT=600;
+var HEIGHT=800;
 var WIDTH=800;
 var canvas;
 var player = {
-    width: 20, height: 100,
+    width: 10, height: 100,
  x: null, y: null,
  update:function(x,y,offset)
  {
@@ -14,15 +14,16 @@ var player = {
      };
 
 var score = {
-    playerID:null,pscore:0,
+    playerID:"",pscore:0,
     update: function (pid, ps) {
         this.playerID = pid;
         this.pscore = ps;
     },
     draw: function () {
         context.font = "24px ariel";
-        //context.textAlign = 'center';
-        context.fillText("score:"+this.playerID + ": " + this.pscore, WIDTH / 2, 50);
+        if (this.playerID != "") {
+            context.fillText(this.playerID + ": " + this.pscore, WIDTH / 2, 50);
+        }
     }
 };
 var ball={
