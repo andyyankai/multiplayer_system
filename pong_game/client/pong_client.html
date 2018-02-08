@@ -200,6 +200,12 @@
 	  color: rgba(113,113,113, 0.5);
 	  background: transparent;
 	}
+	
+	.game-box {
+		border-color: #d412c5;
+	  border-style: dotted;
+	  border-width: 2px;
+	}
     </style>
 </head>
 
@@ -243,17 +249,33 @@
 
     </div>
     <div align="center">
-    	<div class="submit-bot" id='cntBtn' onclick="connect();" >Connect</div>
+    	<div class="submit-bot" id='cntBtn' onclick="connect();">Connect
+    	</div>
     </div>
     
     
-    <div id="game_canvas">
+    <div class="game-box" id="game_canvas">
     </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
     <script src="gameui.js"></script>
     <script src="fancywebsocket.js"></script>
     <script>
+   
+    		var ar=new Array(33,34,35,36,37,38,39,40);
+
+		$(document).keydown(function(e) {
+		     var key = e.which;
+		      //console.log(key);
+		      //if(key==35 || key == 36 || key == 37 || key == 39)
+		      if($.inArray(key,ar) > -1) {
+			  e.preventDefault();
+			  return false;
+		      }
+		      return true;
+		});
+
+
 		var Server;
 		var gameState = false;
 		var upArrow = 38;
@@ -287,6 +309,7 @@
 			//Let the user know we're connected
 			Server.bind('open', function() {
                 document.getElementById("cntBtn").disabled = true;
+                document.getElementById("cntBtn").innerHTML = "Disconnect"
                 log("Connected.<br>");
                 send(document.getElementById('gameid').value);
 			});
@@ -294,6 +317,8 @@
 			//OH NOES! Disconnection occurred.
 			Server.bind('close', function( data ) {
                 document.getElementById("cntBtn").disabled = false;
+                document.getElementById("cntBtn").innerHTML = "Connect"
+                window.scrollTo(0, 700);
 				log( "Disconnected.<br>" );
 			});
 
