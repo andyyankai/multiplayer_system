@@ -48,8 +48,13 @@ typedef void (*messageCallback)(int, string);
 #define WS_TIMEOUT_RECV 10
 #define WS_TIMEOUT_PONG 5
 
+
+
+    
 class wsClient{
 public:
+
+
     wsClient(int _socket, in_addr _addr){
         socket = _socket;
         MessageBuffer.clear();
@@ -63,8 +68,14 @@ public:
         FrameBuffer.clear();
         MessageOpcode = 0;
         MessageBufferLength = 0;
+        
+        timeElapsed = clock();
     }
-
+    std::string getTimeStamp();
+    int calculateLatency(std::string timeData); // function latency
+    
+    
+    int networkDelay;
     int socket;                            // client socket
     string MessageBuffer;                  // a blank string when there's no incoming frames
     int ReadyState;                        // between 0 and 3
@@ -72,11 +83,12 @@ public:
     time_t PingSentTime;                   // 0 when the server is not waiting for a pong
     int CloseStatus;                       // close status that wsOnClose() will be called with
     in_addr addr;
-    int FramePayloadDataLength;            // length of a frame's payload data.
+    size_t FramePayloadDataLength;         // length of a frame's payload data.
     int FrameBytesRead;                    // amount of bytes read for a frame, reset to 0 when all frame data has been read
     string FrameBuffer;                    // joined onto end as a frame's data comes in, reset to blank string when all frame data has been read
     unsigned char MessageOpcode;           // stored by the first frame for fragmented messages, default value is 0
     size_t MessageBufferLength;            // the payload data length of MessageBuffer
+    clock_t timeElapsed;
 };
 
 class webSocket{
@@ -98,6 +110,8 @@ public:
     void wsClose(int clientID);
     vector<int> getClientIDs();
     string getClientIP(int clientID);
+    
+    
 private:
     vector<wsClient *> wsClients;
     map<int, int> socketIDmap;
@@ -123,5 +137,10 @@ private:
     messageCallback callOnMessage;
     nullCallback callPeriodic;
 };
+
+std::vector<std::string> &parseTime(const std::string &s, char delim, std::vector<std::string> &elems);
+std::vector<std::string> parseTime(const std::string &s, char delim);
+
+
 
 #endif

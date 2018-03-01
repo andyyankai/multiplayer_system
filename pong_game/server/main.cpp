@@ -39,6 +39,22 @@ std::queue<game_message> msg;
 
 
 /* called when a client connects */
+void sendPing()
+{
+	if (server.getClientIDs().size() == 4)
+	{
+		int counter = 0;
+		for (auto& care: server.getClients())
+		{
+			std::string ping = "ping,";
+			ping += care->getTimeStamp();
+			std::cout << "The ping I'm sending: " << ping << std::endl;
+			server.wsSend(counter,ping);
+			counter++;
+		}
+	}
+}
+
 void openHandler(int clientID) {
 
 	vector<int> clientIDs = server.getClientIDs();

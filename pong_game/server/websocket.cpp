@@ -16,6 +16,7 @@
 #define _WINSOCK_DEPRECATED_NO_WARNINGS 1
 #endif
 
+#include <sstream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -110,6 +111,101 @@ void showAvailableIP(){
 
 #endif
 }
+
+std::string wsClient::getTimeStamp()
+{
+	SYSTEMTIME time;  // will be different for linux and windows
+	GetSystemTime(&time);
+
+	string work = "";
+	int hour, minute, second, ms;
+
+	hour = time.wHour;
+	minute = time.wMinute;
+	second = time.wSecond;
+	ms = time.wMilliseconds;
+
+	work += std::to_string(hour) + ",";
+	work += std::to_string(minute) + ",";
+	work += std::to_string(second) + ",";
+	work += std::to_string(ms);
+
+	return work;
+}
+
+std::vector<std::string> &parseTime(const std::string &s, char delim, std::vector<std::string> &elems)
+{
+	std::string item;
+	std::stringstream ss(s);
+
+	while (std::getline(ss, item, delim)) {
+		elems.push_back(item);
+	}
+
+	return elems;
+}
+//Parse string
+std::vector<std::string> parseTime(const std::string &s, char delim)
+{
+	std::vector<std::string> elems;
+	parseTime(s, delim, elems);
+	return elems;
+}
+
+//Convert string of 01,45,56,22 into 01:45:56:22
+int wsClient::calculateLatency(std::string timeData)
+{
+	// Set convertedTime to NULL - was complaining about this variable not being initialized
+	//changed convertedTime to resultingTime - KTZ
+	/*SYSTEMTIME time;
+	GetSystemTime(&time);
+	int result;
+	int servTime = time.wMinute + time.wSecond + time.wMilliseconds;
+	std::vector<std::string> parsedTime = parseTime(timeData, ',');
+	int minute, second, ms;
+	minute = stoi(parsedTime[1]);
+	second = stoi(parsedTime[2]);
+	ms = stoi(parsedTime[3]);
+	int clientTime = minute + second + ms;
+	result = servTime - clientTime;
+	networkDelay = result;
+	return result;*/
+
+	string currentTime = getTimeStamp();
+	std::vector<std::string> timeNow = parseTime(currentTime, ',');
+	std::vector<std::string> parsedTime = parseTime(timeData, ',');
+
+	int hours = std::stoi(parsedTime[0]);
+	int minutes = std::stoi(parsedTime[1]);
+	int seconds = std::stoi(parsedTime[2]);
+	int milliseconds = std::stoi(parsedTime[3]);
+
+	int hoursNow = std::stoi(timeNow[0]);
+	int minutesNow = std::stoi(timeNow[1]);
+	int secondsNow = std::stoi(timeNow[2]);
+	int millisecondsNow = std::stoi(timeNow[3]);
+
+	int hoursDiff = hoursNow - hours;
+	int minutesDiff = minutesNow - minutes;
+	int secondsDiff = secondsNow - seconds;
+	int millisecondsDiff = millisecondsNow - milliseconds;
+	
+	int totalMilliseconds = 0;
+
+	//cout << "\nCalculating total ms...";
+	//cout << "\nms = " << totalMilliseconds;
+	totalMilliseconds += minutesDiff * 60 * 1000;
+	//cout << "\nms = " << totalMilliseconds;
+	totalMilliseconds += secondsDiff * 1000;
+	//cout << "\nms = " << totalMilliseconds;
+	totalMilliseconds += millisecondsDiff;
+	//cout << "\nms = " << totalMilliseconds << "\n";
+
+	networkDelay = totalMilliseconds;
+
+	return networkDelay;
+}
+
 
 vector<int> webSocket::getClientIDs(){
     vector<int> clientIDs;
@@ -764,6 +860,10 @@ void webSocket::stopServer(){
         if (wsClients[i] != NULL){
             if (wsClients[i]->ReadyState != WS_READY_STATE_CONNECTING)
                 wsSendClientClose(i, WS_STATUS_GONE_AWAY);
+                
+
+
+
 #ifdef __linux__
                 close(wsClients[i]->socket);
 #elif _WIN32

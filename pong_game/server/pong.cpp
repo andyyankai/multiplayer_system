@@ -31,6 +31,12 @@ void Pong::init() {
 	p2.v.y = 6;
 	p3.v.x = 6;
 	p4.v.x = 6;
+	
+	lag1 = 0;
+	lag2 = 0;
+	lag3 = 0;
+	lag4 = 0;
+	
 }
 
 bool Pong::Intersect(double x, double y, double w, double h, double ballx, double bally, double ballw, double ballh) {
@@ -136,6 +142,10 @@ bool Pong::update()
 		b.v.y = 1 * smash * b.speed * sin(theta);
 		attack = 4;
 	}
+
+
+
+	// latency Incremental
 
 
 
