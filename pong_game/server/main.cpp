@@ -16,7 +16,13 @@ bool gameState = false;
 
 struct players {
 	int playerID;
+	int playerID2;
+	int playerID3;
+	int playerID4;
 	std::string playername;
+	std::string playername2;
+	std::string playername3;
+	std::string playername4;
 };
 
 struct game_message {
@@ -36,14 +42,20 @@ std::queue<game_message> msg;
 void openHandler(int clientID) {
 
 	vector<int> clientIDs = server.getClientIDs();
-	if (clientIDs.size() > 1) {
-		server.wsSend(clientID, "Connection closed because other player has disconnected.");
+	if (clientIDs.size() > 4) {
+		std::cout << clientID << "Connection refused, 4 players are full!" << std::endl;
+		server.wsSend(clientID, "connection refused, 4 players are already playing;");
 		server.wsClose(clientID);
 	}
-	else if (clientIDs.size() == 1) {
+	else {
 
-		std::cout << "A player with ID: " << clientID << " has conected.";
-		user.playerID = clientIDs[0];
+		std::cout << clientID << " has joined the game";
+		if (clientIDs.size() == 4) {
+			user.playerID = clientIDs[0];
+			user.playerID2 = clientIDs[1];
+			user.playerID3 = clientIDs[2];
+			user.playerID4 = clientIDs[3];
+		}
 	}
 
 }
@@ -54,7 +66,8 @@ void closeHandler(int clientID) {
 	std::cout << "a player " << clientID << " has leaved.";
 
 	vector<int> clientIDs = server.getClientIDs();
-	if (clientIDs.size() < 1) {
+
+	if (clientIDs.size() < 4) {
 		gameState = false;
 		delete game;
 	}
@@ -76,11 +89,35 @@ std::vector<std::string> split(const std::string &s, char delim) {
 }
 /* called when a client sends a message to the server */
 void messageHandler(int clientID, string message) {
+	ostringstream os;
+	os << "another player named" + message + "hasjoined!";
+	vector<int> clientIDs = server.getClientIDs();
+	server.wsSend(clientID, "You named: " + message + "has joined!");
+	for (int i = 0; i < clientIDs.size(); i++) {
+		if (clientIDs[i] != clientID)
+		{
+			server.wsSend(clientIDs[i], os.str());
+		}
+	}
+	
+
 
 	if (gameState == true)
 	{
 		std::vector<string> split_msg = split(message, ',');
-		unsigned int player = 0;
+		unsigned int player;
+		if (clientID == user.playerID) {
+			player = 0;
+		}
+		else if (clientID == user.playerID2) {
+			player = 1;
+		}
+		else if (clientID == user.playerID3) {
+			player = 2;
+		}
+		else if (clientID == user.playerID4) {
+			player = 3;
+		}
 		game_message move;
 		move.player = player;
 		move.timeSent = std::stoull(split_msg[0]);
@@ -88,13 +125,23 @@ void messageHandler(int clientID, string message) {
 		move.keyCode = std::stoi(split_msg[1]);
 		msg.push(move);
 	}
-	if(gameState==false)
-	{		user.playername = message;
-		std::ostringstream os;
-		os << "player named: " << message << "has joined!";
-		server.wsSend(clientID, os.str());
-		vector<int> clientIDs = server.getClientIDs();
-		if (clientIDs.size() == 1) {
+	if (gameState == false) {
+		if (clientID == 0) {
+			user.playername = message;
+		}
+		else if (clientID == 1) {
+			user.playername2 = message;
+		}
+		else if (clientID == 2) {
+			user.playername3 = message;
+		}
+		else if (clientID == 3) {
+			user.playername4 = message;
+		}
+
+		
+		
+		if (clientIDs.size() == 4) {
 			game = new Pong(800, 600);
 			gameState = true;
 		}
@@ -105,26 +152,52 @@ void messageHandler(int clientID, string message) {
 /* called once per select() loop */
 void periodicHandler() {
 	vector<int> clientIDs = server.getClientIDs();
-	if (gameState == true && clientIDs.size() == 1) {
+	if (gameState == true && clientIDs.size() == 4) {
 		if (!msg.empty()) {
 			std::ostringstream confirmMsg;
 			confirmMsg << "Move confirmed," << msg.front().keyCode;
 
 			game->movePlayer(msg.front().player, msg.front().keyCode);
-			server.wsSend(user.playerID, confirmMsg.str());
+			if (msg.front().player == 0) {
+				server.wsSend(user.playerID, confirmMsg.str());
+			}
+			if (msg.front().player == 1) {
+				server.wsSend(user.playerID2, confirmMsg.str());
+			}
+			if (msg.front().player == 2) {
+				server.wsSend(user.playerID3, confirmMsg.str());
+			}
+			if (msg.front().player == 3) {
+				server.wsSend(user.playerID4, confirmMsg.str());
+
+			}
 			msg.pop();
 		}
-		
-		
+
+
 		bool new_game = game->update();
 		if (new_game == true) {
 			server.wsSend(user.playerID, "New Round");
+			server.wsSend(user.playerID2, "New Round");
+			server.wsSend(user.playerID3, "New Round");
+			server.wsSend(user.playerID4, "New Round");
 		}
 
 
 		std::ostringstream pos = game->trackmovement();
-		pos << "," << user.playername << ",0";
+		std::ostringstream p2os = game->trackmovement();
+		std::ostringstream p3os = game->trackmovement();
+		std::ostringstream p4os = game->trackmovement();
+
+		pos << "," << user.playername << "," << user.playername2 << "," << user.playername3 << "," << user.playername4 << ",0";
+		p2os << "," << user.playername << "," << user.playername2 << "," << user.playername3 << "," << user.playername4 << ",1";
+		p3os << "," << user.playername << "," << user.playername2 << "," << user.playername3 << "," << user.playername4 << ",2";
+		p4os << "," << user.playername << "," << user.playername2 << "," << user.playername3 << "," << user.playername4 << ",3";
+
 		server.wsSend(user.playerID, pos.str());
+		server.wsSend(user.playerID2, p2os.str());
+		server.wsSend(user.playerID3, p3os.str());
+		server.wsSend(user.playerID4, p4os.str());
 
 
 
