@@ -1,0 +1,4 @@
+(1) Open the command line interface.
+(2) Type "make" under server directory to compile. Also remember to use "make clean" if there are .o files.
+(3) Run "./ponggame".
+

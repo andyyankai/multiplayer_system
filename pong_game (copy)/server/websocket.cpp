@@ -13,7 +13,6 @@
 #pragma comment(lib, "iphlpapi.lib")
 #define MALLOC(x) HeapAlloc(GetProcessHeap(), 0, (x))
 #define FREE(x) HeapFree(GetProcessHeap(), 0, (x))
-#define _WINSOCK_DEPRECATED_NO_WARNINGS 1
 #endif
 
 #include <sstream>
@@ -27,6 +26,7 @@
 #include "websocket.h"
 #include "base64.h"
 #include "sha1.h"
+
 
 using namespace std;
 
@@ -98,10 +98,7 @@ void showAvailableIP(){
 
     for (int i = 0; i < (int) pIPAddrTable->dwNumEntries; i++) {
         IPAddr.S_un.S_addr = (u_long) pIPAddrTable->table[i].dwAddr;
-		char IPAddr_str[INET_ADDRSTRLEN];
-        //Deprecated ntoa API
-		//cout << "    " << i << ": " << inet_ntoa(IPAddr) << endl;
-		cout << "    " << i << ": " << inet_ntop(AF_INET, &(IPAddr), IPAddr_str, INET_ADDRSTRLEN) << endl;
+        cout << "    " << i << ": " << inet_ntoa(IPAddr) << endl;
     }
 
     if (pIPAddrTable) {
@@ -114,16 +111,16 @@ void showAvailableIP(){
 
 std::string wsClient::getTimeStamp()
 {
-	tm time;  // will be different for linux and windows, use SYSTEMTIME here
-	// GetSystemTime(&time); // uncomment this when work on windows
+	tm time; // windows and linux have differnent way to implement this, for windows, use SYSTEMTIME
+	// GetSystemTime(&time);
 
 	string work = "";
 	int hour, minute, second, ms;
 
-	hour = time.tm_hour; // for windows, these are also different, check online
+	hour = time.tm_hour; // change when submit with windows version
 	minute = time.tm_min;
 	second = time.tm_sec;
-	ms = 1; // linux dont suuport ms
+	ms = 1;
 
 	work += std::to_string(hour) + ",";
 	work += std::to_string(minute) + ",";
@@ -144,6 +141,7 @@ std::vector<std::string> &parseTime(const std::string &s, char delim, std::vecto
 
 	return elems;
 }
+
 //Parse string
 std::vector<std::string> parseTime(const std::string &s, char delim)
 {
@@ -152,10 +150,9 @@ std::vector<std::string> parseTime(const std::string &s, char delim)
 	return elems;
 }
 
-//Convert string of 01,45,56,22 into 01:45:56:22
+// 01,45,56,22 into 01:45:56:22
 int wsClient::calculateLatency(std::string timeData)
 {
-
 	string currentTime = getTimeStamp();
 	std::vector<std::string> timeNow = parseTime(currentTime, ',');
 	std::vector<std::string> parsedTime = parseTime(timeData, ',');
@@ -177,20 +174,19 @@ int wsClient::calculateLatency(std::string timeData)
 	
 	int totalMilliseconds = 0;
 
-
-
+	//cout << "\nCalculating total ms...";
+	//cout << "\nms = " << totalMilliseconds;
 	totalMilliseconds += minutesDiff * 60 * 1000;
-
+	//cout << "\nms = " << totalMilliseconds;
 	totalMilliseconds += secondsDiff * 1000;
-
+	//cout << "\nms = " << totalMilliseconds;
 	totalMilliseconds += millisecondsDiff;
-
+	//cout << "\nms = " << totalMilliseconds << "\n";
 
 	networkDelay = totalMilliseconds;
 
 	return networkDelay;
 }
-
 
 vector<int> webSocket::getClientIDs(){
     vector<int> clientIDs;
@@ -203,10 +199,7 @@ vector<int> webSocket::getClientIDs(){
 }
 
 string webSocket::getClientIP(int clientID){
-	//Deprecated ntoa API
-	//return string(inet_ntoa(wsClients[clientID]->addr));
-	char clientIP_str[INET_ADDRSTRLEN];
-	return string(inet_ntop(AF_INET, &(wsClients[clientID]->addr), clientIP_str, INET_ADDRSTRLEN));
+    return string(inet_ntoa(wsClients[clientID]->addr));
 }
 
 void webSocket::wsCheckIdleClients(){
@@ -255,7 +248,7 @@ bool webSocket::wsSendClientMessage(int clientID, unsigned char opcode, string m
     int lastFrameBufferLength = (messageLength % bufferSize) != 0 ? (messageLength % bufferSize) : (messageLength != 0 ? bufferSize : 0);
 
     // loop around all frames to send
-    for (int i = 0; i < frameCount; i++){
+    for (int i = 0; i < frameCount; i++) {
         // fetch fin, opcode and buffer length for frame
         unsigned char fin = i != maxFrame ? 0 : WS_FIN;
         opcode = i != 0 ? WS_OPCODE_CONTINUATION : opcode;
@@ -271,7 +264,7 @@ bool webSocket::wsSendClientMessage(int clientID, unsigned char opcode, string m
             buf = new char[totalLength];
             buf[0] = fin | opcode;
             buf[1] = bufferLength;
-            memcpy(buf+2, message.substr(i*bufferSize, bufferLength).c_str(), bufferLength);
+            memcpy(buf+2, message.c_str(), message.size());
         }
         else if (bufferLength <= 65535) {
             // int payloadLength = WS_PAYLOAD_LENGTH_16;
@@ -281,7 +274,7 @@ bool webSocket::wsSendClientMessage(int clientID, unsigned char opcode, string m
             buf[1] = WS_PAYLOAD_LENGTH_16;
             buf[2] = bufferLength >> 8;
             buf[3] = bufferLength;
-            memcpy(buf+4, message.substr(i*bufferSize, bufferLength).c_str(), bufferLength);
+            memcpy(buf+4, message.c_str(), message.size());
         }
         else {
             // int payloadLength = WS_PAYLOAD_LENGTH_63;
@@ -297,7 +290,7 @@ bool webSocket::wsSendClientMessage(int clientID, unsigned char opcode, string m
             buf[7] = bufferLength >> 16;
             buf[8] = bufferLength >> 8;
             buf[9] = bufferLength;
-            memcpy(buf+10, message.substr(i*bufferSize, bufferLength).c_str(), bufferLength);
+            memcpy(buf+10, message.c_str(), message.size());
         }
 
         // send frame
@@ -379,14 +372,6 @@ bool webSocket::wsCheckSizeClientFrame(int clientID){
                 for (int c = 0; c < num_bytes; c++)
                     length += length_bytes[c] << (8 * (num_bytes - 1 - c));
                 client->FramePayloadDataLength = length;
-            }
-        }
-
-        if (client->FramePayloadDataLength >= 0){
-            if (client->FramePayloadDataLength > 100000){
-                client->FramePayloadDataLength = -1;
-                wsSendClientClose(clientID, WS_STATUS_MESSAGE_TOO_BIG);
-                return false;
             }
         }
 
@@ -478,7 +463,7 @@ bool webSocket::wsProcessClientFrame(int clientID){
         return false; // close socket, as no mask bit was sent from the client
 
     // fetch byte position where the mask key starts
-    int seek = client->FrameBytesRead <= 131 ? 2 : (client->FrameBytesRead <= 65543 ? 4 : 10);
+    int seek = client->FrameBytesRead <= 125 ? 2 : (client->FrameBytesRead <= 65535 ? 4 : 10);
 
     // read mask key
     char maskKey[4];
@@ -549,26 +534,26 @@ bool webSocket::wsProcessClientFrame(int clientID){
     return true;
 }
 
-bool webSocket::wsBuildClientFrame(int clientID, const char *buffer, int bufferLength){
+bool webSocket::wsBuildClientFrame(int clientID, char *buffer, int bufferLength){
     wsClient *client = wsClients[clientID];
     // increase number of bytes read for the frame, and join buffer onto end of the frame buffer
     client->FrameBytesRead += bufferLength;
     client->FrameBuffer.append(buffer, bufferLength);
 
     // check if the length of the frame's payload data has been fetched, if not then attempt to fetch it from the frame buffer
-    if (client->FramePayloadDataLength != -1 || wsCheckSizeClientFrame(clientID) == true){
+    if (wsCheckSizeClientFrame(clientID) == true){
         // work out the header length of the frame
         int headerLength = (client->FramePayloadDataLength <= 125 ? 0 : (client->FramePayloadDataLength <= 65535 ? 2 : 8)) + 6;
 
         // check if all bytes have been received for the frame
         int frameLength = client->FramePayloadDataLength + headerLength;
         if (client->FrameBytesRead >= frameLength){
+            char *nextFrameBytes;
             // check if too many bytes have been read for the frame (they are part of the next frame)
             int nextFrameBytesLength = client->FrameBytesRead - frameLength;
-            string nextFrameBytes;
-            if (nextFrameBytesLength > 0){
+            if (nextFrameBytesLength > 0) {
                 client->FrameBytesRead -= nextFrameBytesLength;
-                nextFrameBytes = client->FrameBuffer.substr(frameLength, nextFrameBytesLength);
+                nextFrameBytes = buffer + frameLength;
                 client->FrameBuffer = client->FrameBuffer.substr(0, frameLength);
             }
 
@@ -587,7 +572,7 @@ bool webSocket::wsBuildClientFrame(int clientID, const char *buffer, int bufferL
                 return result;
 
             // build the next frame with the extra bytes
-            return wsBuildClientFrame(clientID, nextFrameBytes.c_str(), nextFrameBytesLength);
+            return wsBuildClientFrame(clientID, nextFrameBytes, nextFrameBytesLength);
         }
     }
 
@@ -807,10 +792,7 @@ void webSocket::startServer(int port){
                         if (newfd != -1){
                             /* add new client */
                             wsAddClient(newfd, cli_addr.sin_addr);
-                            //Deprecated ntoa API
-							//printf("New connection from %s on socket %d\n", inet_ntoa(cli_addr.sin_addr), newfd);
-							char cli_addr_str[INET_ADDRSTRLEN];
-							printf("New connection from %s on socket %d\n", inet_ntop(AF_INET, &(cli_addr.sin_addr), cli_addr_str, INET_ADDRSTRLEN));
+                            printf("New connection from %s on socket %d\n", inet_ntoa(cli_addr.sin_addr), newfd);
                         }
                     }
                     else {
@@ -845,10 +827,6 @@ void webSocket::stopServer(){
         if (wsClients[i] != NULL){
             if (wsClients[i]->ReadyState != WS_READY_STATE_CONNECTING)
                 wsSendClientClose(i, WS_STATUS_GONE_AWAY);
-                
-
-
-
 #ifdef __linux__
                 close(wsClients[i]->socket);
 #elif _WIN32

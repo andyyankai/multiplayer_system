@@ -1,3 +1,139 @@
+
+		var Server;
+		var gameState = false;
+		var upArrow = 38;
+		var leftArrow = 37;
+		var downArrow = 40;
+		var rightArrow = 39;
+		var debug = false;
+		var offset = 0;
+		function log( text ) {
+			$log = $('#log');
+			//Add text to log
+			$log.append(($log.val()?"\n":'')+text);
+			//Autoscroll
+			$log[0].scrollTop = $log[0].scrollHeight - $log[0].clientHeight;
+		}
+
+		function send( text ) {
+			Server.send( 'message', text );
+		}
+
+        function connect(){
+
+        	if (gameState == true)
+        	{
+        		document.getElementById("cntBtn").disabled = false;
+			    document.getElementById("cntBtn").innerHTML = "Connect"
+			    window.scrollTo(0, 0);
+			    Server.disconnect();
+			    gameState = false;
+        	}
+        	else
+        	{
+
+            log('Connecting...<br>');
+			Server = new FancyWebSocket('ws://' + document.getElementById('ip').value + ':' + document.getElementById('port').value);
+
+			$(document).keydown(function(event) {
+			    if (event.which == upArrow || event.which == downArrow) {
+			        var d = new Date();
+			        send(d.getTime() + "," + event.which);
+			        offset += event.which == upArrow ? -15 : 15;
+
+			    }
+			    else if(event.which==leftArrow||event.which==rightArrow)
+			    {
+			        var d2 = new Date();
+			        send(d2.getTime() + "," + event.which);
+			        offset2 += event.which == leftArrow ? -15 : 15;
+			    }
+			});
+
+			//Let the user know we're connected
+			Server.bind('open', function() {
+                document.getElementById("cntBtn").disabled = true;
+                document.getElementById("cntBtn").innerHTML = "Disconnect"
+                log("Connected.<br>");
+                send(document.getElementById('gameid').value);
+			});
+
+			//OH NOES! Disconnection occurred.
+			Server.bind('close', function( data ) {
+                document.getElementById("cntBtn").disabled = false;
+                document.getElementById("cntBtn").innerHTML = "Connect"
+				log( "Disconnected.<br>" );
+			});
+
+			//Log any messages sent from server
+			Server.bind('message', function( payload ) {
+			    if (payload =="connection refused, 4 players are already playing;<br>") {
+			        log(payload);
+			        log("<br>");
+			    }
+			    else if (payload.indexOf("Move confirmed") > -1) {
+			        var res = payload.split(",");
+			        offset += res[1] == upArrow ? 15 : -15;
+			        offset2 += res[1] == leftArrow ? 15 : -15;
+
+			    }
+			    else if (payload.indexOf("New Round") > -1) {
+			        offset = 0;
+			        offset2 = 0;
+			    }
+			    else if (gameState) {
+			        if (debug) {
+			            log(payload);
+			        }
+			        var res = payload.split(",");
+
+			        ball.update(res[8], res[9]);
+
+			        if (res[18] == 0) {
+			            player.update(parseInt(res[0]), parseInt(res[1]), offset);
+			            player2.update(parseInt(res[2]), parseInt(res[3]), 0);
+			            player3.update(parseInt(res[4]), parseInt(res[5]),0);
+			            player4.update(parseInt(res[6]), parseInt(res[7]),0);
+
+			        }
+			        if (res[18] == 1) {
+			            player.update(parseInt(res[0]), parseInt(res[1]), 0);
+			            player2.update(parseInt(res[2]), parseInt(res[3]), offset);
+			            player3.update(parseInt(res[4]), parseInt(res[5]), 0);
+			            player4.update(parseInt(res[6]), parseInt(res[7]), 0);
+
+			        }
+			        if (res[18] ==2) {
+			            player.update(parseInt(res[0]), parseInt(res[1]), 0);
+			            player2.update(parseInt(res[2]), parseInt(res[3]), 0);
+			            player3.update(parseInt(res[4]), parseInt(res[5]), offset2);
+			            player4.update(parseInt(res[6]), parseInt(res[7]), 0);
+
+			        }
+			        if (res[18] == 3) {
+			            player.update(parseInt(res[0]), parseInt(res[1]), 0);
+			            player2.update(parseInt(res[2]), parseInt(res[3]), 0);
+			            player3.update(parseInt(res[4]), parseInt(res[5]), 0);
+			            player4.update(parseInt(res[6]), parseInt(res[7]), offset2);
+
+			        }
+			        
+
+			        score.update(res[14], res[15], res[16], res[17], res[10], res[11], res[12], res[13]); //score(playername,score)
+			        // ping.update();
+
+			    }
+			    else {
+			        log(payload);
+			        log("<br>")
+			        gameState = true;
+			    }
+			});
+
+			Server.connect();
+			}
+        }
+
 var context;
 var HEIGHT = 600;
 var WIDTH = 800;
@@ -46,9 +182,6 @@ var score = {
     playerID3: "", pscore3: 0,
     playerID4: "", pscore4: 0,
     update: function (pid, pid2, pid3, pid4, ps, ps2, ps3, ps4) {
-        console.log(pid2);
-        console.log(pid3);
-        console.log(ps);
         this.playerID = pid;
         this.playerID2 = pid2;
         this.playerID3 = pid3;
@@ -124,6 +257,7 @@ function draw() {
     player3.draw();
     player4.draw();
     score.draw();
+    context.fillText(FancyWebSocket.ping, 100, 50);
 
 
     context.restore();

@@ -23,6 +23,10 @@ struct players {
 	std::string playername2;
 	std::string playername3;
 	std::string playername4;
+	int lag1;
+	int lag2;
+	int lag3;
+	int lag4;
 };
 
 struct game_message {
@@ -32,6 +36,9 @@ struct game_message {
 	unsigned int keyCode;
 
 };
+
+int counter;
+int counterLimit = 500;
 
 players user;
 std::queue<game_message> msg;
@@ -105,65 +112,107 @@ std::vector<std::string> split(const std::string &s, char delim) {
 }
 /* called when a client sends a message to the server */
 void messageHandler(int clientID, string message) {
-	ostringstream os;
-	os << "another player named" + message + "hasjoined!";
-	vector<int> clientIDs = server.getClientIDs();
-	server.wsSend(clientID, "You named: " + message + "has joined!");
-	for (int i = 0; i < clientIDs.size(); i++) {
-		if (clientIDs[i] != clientID)
-		{
-			server.wsSend(clientIDs[i], os.str());
-		}
-	}
+	std::cout << message << "Handermessage" << clientID << std::endl;
 	
-
-
-	if (gameState == true)
+	std::vector<std::string> v = split(message, ',');
+	vector<int> clientIDs = server.getClientIDs();
+	
+	if (v[0] == "game-state")
 	{
-		std::vector<string> split_msg = split(message, ',');
-		unsigned int player;
-		if (clientID == user.playerID) {
-			player = 0;
+		if (gameState == true)
+		{
+			std::vector<string> split_msg = split(message, ',');
+			unsigned int player;
+			if (clientID == user.playerID) {
+				player = 0;
+			}
+			else if (clientID == user.playerID2) {
+				player = 1;
+			}
+			else if (clientID == user.playerID3) {
+				player = 2;
+			}
+			else if (clientID == user.playerID4) {
+				player = 3;
+			}
+			game_message move;
+			move.player = player;
+			move.timeSent = std::stoull(split_msg[0]);
+			move.time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+			move.keyCode = std::stoi(split_msg[1]);
+			msg.push(move);
+			
+			if (counter >= counterLimit)
+			{
+				//std::cout << "I'm sending my ping!" << std::endl;
+				sendPing();
+				counter = 0;
+			}
+			else
+				counter++;
 		}
-		else if (clientID == user.playerID2) {
-			player = 1;
+		if (gameState == false) {
+			if (clientID == 0) {
+				user.playername = message;
+			}
+			else if (clientID == 1) {
+				user.playername2 = message;
+			}
+
+			else if (clientID == 2) {
+				user.playername3 = message;
+			}
+			else if (clientID == 3) {
+				user.playername4 = message;
+			}
+			if (clientIDs.size() == 4) {
+				game = new Pong(800, 600);
+				gameState = true;
+			}
+
 		}
-		else if (clientID == user.playerID3) {
-			player = 2;
-		}
-		else if (clientID == user.playerID4) {
-			player = 3;
-		}
-		game_message move;
-		move.player = player;
-		move.timeSent = std::stoull(split_msg[0]);
-		move.time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-		move.keyCode = std::stoi(split_msg[1]);
-		msg.push(move);
+		
+		
 	}
-	if (gameState == false) {
-		if (clientID == 0) {
-			user.playername = message;
-		}
+
+	// When the server sends a ping to the client, the client returns a ping with the time that the message was received.
+	// We now want to calculate the time it took to receive a response.
+	// We pass the time our message was received by the client to calculateLatency().
+	else if (v[0] == "ping")
+	{
+		std::string time = "";
+		time += v[1];
+		time += ",";
+		time += v[2];
+		time += ",";
+		time += v[3];
+		time += ",";
+		time += v[4];
+
+		int latency = server.getClients()[clientID]->calculateLatency(time);
+		if (clientID == 0)
+			user.lag1 = latency;
 		else if (clientID == 1) {
-			user.playername2 = message;
+			user.lag2 = latency;
 		}
 		else if (clientID == 2) {
-			user.playername3 = message;
+			user.lag3 = latency;
 		}
 		else if (clientID == 3) {
-			user.playername4 = message;
+			user.lag4 = latency;
 		}
 
-		
-		
-		if (clientIDs.size() == 4) {
-			game = new Pong(800, 600);
-			gameState = true;
-		}
+		std::string ping = "ping-return,";
+		ping += server.getClients()[clientID]->getTimeStamp();
+		std::cout << "The ping I'm sending: " << ping << std::endl;
+		server.wsSend(clientID, ping);
 	}
-
+	
+	
 }
+
+
+
 
 /* called once per select() loop */
 void periodicHandler() {

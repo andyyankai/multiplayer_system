@@ -145,10 +145,6 @@ bool Pong::update()
 
 
 
-	// latency Incremental
-
-
-
 	//*****keep track of consequetive hits :score*****
 	// right side player #2
 	if (b.x + b.radius > width) {

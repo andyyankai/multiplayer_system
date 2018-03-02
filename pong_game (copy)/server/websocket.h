@@ -12,7 +12,6 @@
 #include <vector>
 #include <map>
 #include <time.h>
-
 using namespace std;
 
 typedef void (*nullCallback)();
@@ -48,13 +47,8 @@ typedef void (*messageCallback)(int, string);
 #define WS_TIMEOUT_RECV 10
 #define WS_TIMEOUT_PONG 5
 
-
-
-    
 class wsClient{
 public:
-
-
     wsClient(int _socket, in_addr _addr){
         socket = _socket;
         MessageBuffer.clear();
@@ -63,19 +57,19 @@ public:
         PingSentTime = 0;
         CloseStatus = 0;
         addr = _addr;
-        FramePayloadDataLength = -1;
+        FramePayloadDataLength = 0;
         FrameBytesRead = 0;
         FrameBuffer.clear();
         MessageOpcode = 0;
         MessageBufferLength = 0;
-        
-        timeElapsed = clock();
+		timeElapsed = clock();
     }
-    std::string getTimeStamp();
-    int calculateLatency(std::string timeData); // function latency
-    
-    
-    int networkDelay;
+
+	std::string getTimeStamp();
+	int calculateLatency(std::string timeData);
+	
+	//My time delay in ms is:
+	int networkDelay;
     int socket;                            // client socket
     string MessageBuffer;                  // a blank string when there's no incoming frames
     int ReadyState;                        // between 0 and 3
@@ -88,7 +82,7 @@ public:
     string FrameBuffer;                    // joined onto end as a frame's data comes in, reset to blank string when all frame data has been read
     unsigned char MessageOpcode;           // stored by the first frame for fragmented messages, default value is 0
     size_t MessageBufferLength;            // the payload data length of MessageBuffer
-    clock_t timeElapsed;
+	clock_t timeElapsed;				   // the amount of time passed since playing the game. default value should be 0 before the start of the game. - KTZ
 };
 
 class webSocket{
@@ -110,10 +104,7 @@ public:
     void wsClose(int clientID);
     vector<int> getClientIDs();
     string getClientIP(int clientID);
-    
-    vector<wsClient *> getClients() { return wsClients;};
-    
-    
+	vector<wsClient *> getClients() { return wsClients; };
 private:
     vector<wsClient *> wsClients;
     map<int, int> socketIDmap;
@@ -128,7 +119,7 @@ private:
     void wsRemoveClient(int clientID);
     bool wsProcessClientMessage(int clientID, unsigned char opcode, string data, int dataLength);
     bool wsProcessClientFrame(int clientID);
-    bool wsBuildClientFrame(int clientID, const char *buffer, int bufferLength);
+    bool wsBuildClientFrame(int clientID, char *buffer, int bufferLength);
     bool wsProcessClientHandshake(int clientID, char *buffer);
     bool wsProcessClient(int clientID, char *buffer, int bufferLength);
     int wsGetNextClientID();
@@ -139,10 +130,7 @@ private:
     messageCallback callOnMessage;
     nullCallback callPeriodic;
 };
-
 std::vector<std::string> &parseTime(const std::string &s, char delim, std::vector<std::string> &elems);
 std::vector<std::string> parseTime(const std::string &s, char delim);
-
-
 
 #endif

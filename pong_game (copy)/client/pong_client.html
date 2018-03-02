@@ -1,0 +1,520 @@
+
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset='UTF-8' />
+    <title>Pong</title>
+    <style>
+        input, textarea {
+            border: 1px solid #990033;
+            margin: 5px;
+            padding: 0px
+        }
+
+        #body {
+            max-width: 850px;
+            margin: auto;
+            color: mediumpurple
+        }
+
+        body {
+            background-color: #000000;
+            
+            background-repeat: repeat;
+        }
+
+        .container {
+            color: #ff0000;
+            position: absolute;
+            border: 2px solid #2700e8;
+            background-color: #000000;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 10px 0;
+            width: 250px;
+            height: 250px;
+        }
+
+        .darker {
+            border-color: #ccc;
+            background-color: #ddd;
+        }
+
+        .container::after {
+            content: "";
+            clear: both;
+            display: table;
+        }
+
+        .time-right {
+            float: right;
+            color: #F44;
+        }
+
+        .log-text {
+            margin-top: 5px;
+            height: 90%;
+            width: 100%;
+            padding-top: 10px;
+            overflow-y: scroll;
+        }
+
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        /* Track */
+        ::-webkit-scrollbar-track {
+            box-shadow: inset 0 0 5px grey;
+            border-radius: 10px;
+        }
+
+        /* Handle */
+        ::-webkit-scrollbar-thumb {
+            background: red;
+            border-radius: 10px;
+        }
+
+            /* Handle on hover */
+            ::-webkit-scrollbar-thumb:hover {
+                background: #b30000;
+            }
+
+        .title {
+            color: blue;
+            font-size: 75px;
+            font-family: Consolas;
+            margin-top: 5px;
+            margin-bottom: 0px;
+            font-family: futura;
+            font-style: italic;
+            width: 100%;
+            margin: 0 auto;
+            text-align: center;
+            color: #313131;
+            -webkit-animation: colorchange 5s infinite alternate;
+        }
+
+        @-webkit-keyframes colorchange {
+            0% {
+                color: blue;
+            }
+
+            10% {
+                color: #8e44ad;
+            }
+
+            20% {
+                color: #1abc9c;
+            }
+
+            30% {
+                color: #d35400;
+            }
+
+            40% {
+                color: blue;
+            }
+
+            50% {
+                color: #34495e;
+            }
+
+            60% {
+                color: blue;
+            }
+
+            70% {
+                color: #2980b9;
+            }
+
+            80% {
+                color: #f1c40f;
+            }
+
+            90% {
+                color: #2980b9;
+            }
+
+            100% {
+                color: pink;
+            }
+        }
+
+        .setting-box {
+        }
+
+        .submit-bot {
+            padding-right: 50px;
+            text-align: center;
+            width: 30%;
+            background-color: #013307;
+            color: #ff0000;
+            font-size: 30px;
+            font-weight: bold;
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+        }
+
+        input[type=text], textarea {
+            -webkit-transition: all 0.30s ease-in-out;
+            -moz-transition: all 0.30s ease-in-out;
+            -ms-transition: all 0.30s ease-in-out;
+            -o-transition: all 0.30s ease-in-out;
+            outline: none;
+            padding: 3px 0px 3px 3px;
+            margin: 5px 1px 3px 0px;
+            border: 1px solid #990033;
+            border-radius: 10px;
+        }
+
+            input[type=text]:focus, textarea:focus {
+                box-shadow: 0 0 5px rgba(81, 203, 238, 1);
+                padding: 3px 0px 3px 3px;
+                margin: 5px 1px 3px 0px;
+                border: 5px solid rgba(81, 203, 238, 1);
+                border-radius: 25px;
+            }
+
+        .select-title {
+            margin-top: 5px;
+            color: #ff2828;
+        }
+
+        .textarea {
+            border-color: #EEEEEE;
+            border-style: solid;
+            border-width: 2px;
+            width: 95%;
+            min-height: 550px;
+            padding: 30px;
+            margin-top: 28px;
+            font-family: Times-Italic;
+            font-size: 19px;
+            line-height: 27px;
+            text-align: left;
+            resize: none;
+            color: rgba(113,113,113, 0.5);
+            background: transparent;
+        }
+
+        .game-box {
+            border-color: #d412c5;
+            border-style: dotted;
+            border-width: 2px;
+        }
+    </style>
+</head>
+
+<body align="center">
+    <div class="container">
+        <span class="time-right">Game Log</span>
+        <p class="log-text" id='log' name='log'><br></p>
+    </div>
+
+    <center>
+
+        <div class="title"> PONG GAME </div>
+        <div style="width:400px; height:130px; border:3px dashed #fb0b0b;">
+            <p> <font size="2" face="monospace" color="#00FFFF"> CREATORS:<br />Kai Yan #24684490<br />Xiyu Wang #19001614<br />Yuanqin Fan #34137914<br />Yian Li #68342735</font></p>
+        </div>
+
+    </center>
+
+
+    <div>
+        <div class="select-title">Server ip</div>
+
+        <input style="background-color: #3CBC8D;" type='text' id='ip' name='ip' />
+        <script type="text/javascript">
+			var elem = document.getElementById("ip");
+			elem.value = "127.0.0.1";
+        </script>
+
+
+        <div class="select-title">Server port</div>
+
+        <input style="background-color: #3CBC8D;" type='text' id='port' name='port' />
+        <script type="text/javascript">
+			var elem = document.getElementById("port");
+			elem.value = "7347";
+        </script>
+
+        <div class="select-title">Game ID</div>
+
+        <input style="background-color: #3CBC8D;" type='text' id='username' name='username' />
+
+    </div>
+    <div align="center">
+        <div class="submit-bot" id='cntBtn' onclick="Connect()">
+            Connect
+        </div>
+    </div>
+
+<script src= "clientmanager.js"></script>
+    <div class="game-box" id="game_canvas">
+
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<script>
+function log( text ) {
+			$log = $('#log');
+			//Add text to log
+			$log.append(($log.val()?"\n":'')+text);
+			//Autoscroll
+			$log[0].scrollTop = $log[0].scrollHeight - $log[0].clientHeight;
+		}
+
+function Connect() {
+    var IP = document.getElementById("ip").value;
+    var PORT = document.getElementById("port").value;
+    var USERNAME = document.getElementById("username").value;
+    log('Connecting...<br>');
+    clientManager = new ClientManager(IP, PORT, "", USERNAME);
+    clientManager.send(['username', USERNAME]);
+    clientManager.requestNewGame();
+
+var animate = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || function (callback) {
+    window.setTimeout(callback, 1000 / 60)
+};
+
+// CREATE THE CANVAS AND ESTABLISH VARIABLES
+var canvas = document.createElement("canvas");
+var width = 900; 
+var height = 400; 
+canvas.width = width;
+canvas.height = height;
+var context = canvas.getContext('2d');
+var player = new Player();
+var player2 = new Player2();
+var player3 = new Player3();
+var player4 = new Player4();
+
+var ball = new Ball(clientManager.ballX, clientManager.ballY);
+var keysDown = {};
+var score1 = clientManager.score1;
+var score2 = clientManager.score2;
+
+// PLACE HOLDER TO THEN REPLACE THE ACTUAL THING FROM CLIENT MANAGER
+var playerOne = true;
+//------------------------------------------------------------------
+
+// RENDER ITEMS
+var render = function () {
+
+    // THE BOARD
+    context.fillStyle = "#003300";
+    context.fillRect(0, 0, width, height);
+
+    // THE SCORE WRITING
+    context.fillStyle = "#FFFFFF";
+    context.font = "20pt Courier New";
+
+    // Updating code to hold two separate scores
+    // context.fillText("SCORE: " + clientManager.score.toString() + " %", 406, 15);
+    context.fillText(clientManager.score1, 225, 25); //toString()
+    context.fillText(clientManager.score2, 675, 25); //toString()
+
+    context.fillStyle = "#FFFFFF";
+    context.font = "12pt Courier New";
+    if (clientManager.playerOne)
+    {
+        context.fillText("PLAYER 1", 5, 15);
+        context.fillText(clientManager.username, 5, 35);
+        context.fillText("PLAYER 2", 810, 15);
+        context.fillText(clientManager.opponentUsername, 800, 35);
+        context.fillText(clientManager.ping, 10, height - 20); //toString()
+    }
+    else
+    {
+        context.fillText("PLAYER 1", 5, 15);
+        context.fillText(clientManager.opponentUsername, 5, 35);
+        context.fillText("PLAYER 2", 810, 15);
+        context.fillText(clientManager.username, 800, 35);
+        context.fillText(clientManager.ping, width/2 + 10, height - 20); //toString()
+    }
+    // THE CENTER LINE
+    context.fillStyle = "#FFFFFF";
+    context.fillRect(width / 2, 0, 2, height);
+
+
+    ball.x = clientManager.ballX;
+    ball.y = clientManager.ballY;
+
+    // RENDERING ALL OF THE OBJECTS
+    player.render();
+    player2.render();
+    ball.render();
+};
+
+// UPDATING ACTIONS 
+var update = function () {
+   
+
+    if (clientManager.playerOne){ // If you are player one then you are able to update it, so you can move the paddle
+        player.update();
+        clientManager.send(['game-state', player.paddle.x, player.paddle.y]);
+        player2.paddle2.x = clientManager.opponentPx;
+        player2.paddle2.y = clientManager.opponentPy;
+    } else { // If not then only paddle two will update
+        player2.update();
+        clientManager.send(['game-state', player2.paddle2.x, player2.paddle2.y]);
+        player.paddle.x = clientManager.opponentPx;
+        player.paddle.y = clientManager.opponentPy;
+    }
+
+};
+
+var step = function () {
+    update();
+    render();
+    animate(step);
+};
+
+// CREATING PADDLE FUNCTION
+function Paddle(x, y, width, height) {
+    this.x = x;
+    this.y = y;
+    this.width = width;
+    this.height = height;
+    this.x_speed = 0;
+    this.y_speed = 0;
+}
+
+// CREATING PADDLE 2 FUNCTION
+function Paddle2(x, y, width, height) {
+    this.x = x;
+    this.y = y;
+    this.width = width;
+    this.height = height;
+    this.x_speed = 0;
+    this.y_speed = 0;
+}
+
+// RENDER PADDLE FUNCTION
+Paddle.prototype.render = function () {
+    context.fillStyle = "#FF0033";
+    context.fillRect(this.x, this.y, this.width, this.height);
+};
+
+// RENDER PADDLE 2 FUNCTION
+Paddle2.prototype.render = function () {
+    context.fillStyle = "#FF0033";
+    context.fillRect(this.x, this.y, this.width, this.height);
+};
+
+// PADDLE MOVEMENT
+Paddle.prototype.move = function (x, y) {
+    this.x += x;
+    this.y += y;
+    this.x_speed = x;
+    this.y_speed = y;
+    if (this.y < 0) { //AT THE TOP
+        this.y = 0;
+        this.y_speed = 0;
+    } else if (this.y + this.height > 400) { // AT THE BOTTOM 
+        this.y = 400 - this.height;
+        this.y_speed = 0; 
+    }
+};
+
+// PADDLE 2 MOVEMENT
+Paddle2.prototype.move = function (x, y) {
+    this.x += x;
+    this.y += y;
+    this.x_speed = x;
+    this.y_speed = y;
+    if (this.y < 0) { //AT THE TOP
+        this.y = 0;
+        this.y_speed = 0;
+    } else if (this.y + this.height > 400) { // AT THE BOTTOM 
+        this.y = 400 - this.height;
+        this.y_speed = 0;
+    }
+};
+
+// CREATE THE FIRST PLAYER
+function Player() {
+    // to get the x you subtract 20 from the width
+    this.paddle = new Paddle(10, height / 2, 10, 80);
+}
+
+// CREATE THE SECOND PLAYER 
+function Player2()
+{
+    this.paddle2 = new Paddle2(880, height / 2, 10, 80);
+}
+
+// RENDER PLAYER 1 PADDLE
+Player.prototype.render = function () {
+    this.paddle.render();
+};
+
+// RENDER PLAYER 2 PADDLE
+Player2.prototype.render = function () {
+    this.paddle2.render();
+};
+
+// APPLY PADDLE MOVEMENT [RIGHT SIDE]
+Player.prototype.update = function () {
+    for (var key in keysDown) {
+        var value = Number(key);
+        if (value == 40) { //DOWN ARROW
+            this.paddle.move(0, 4);
+        } else if (value == 38) { //UP ARROW
+            this.paddle.move(0, -4);
+        } 
+    }
+};
+
+// APPLY PADDLE 2 MOVEMENT [LEFT SIDE]
+Player2.prototype.update = function () {
+    for (var key in keysDown) {
+        var value = Number(key);
+        if (value == 40) { //DOWN ARROW
+            this.paddle2.move(0, 4);
+        } else if (value == 38) { //UP ARROW
+            this.paddle2.move(0, -4);
+        }
+    }
+};
+
+
+// CREATE THE BALL
+function Ball(x,y) {
+    this.x = x;
+    this.y = y;
+}
+
+// RENDER BALL
+Ball.prototype.render = function () {
+    context.fillStyle = "#FFFF00";
+    context.fillRect(this.x, this.y, 10, 10);
+};
+
+// THIS IS WHAT WILL MAKE EVERYTHING WORK
+document.body.appendChild(canvas);
+animate(step);
+
+// CHECKS FOR THE PRESSING OF THE BUTTONS WHEN MOVING THE PADDLE
+window.addEventListener("keydown", function (event) {
+    keysDown[event.keyCode] = true;
+});
+
+window.addEventListener("keyup", function (event) {
+    delete keysDown[event.keyCode];
+});
+
+} // Connect function END
+</script>
+
+
+
+</body>
+
+</html>

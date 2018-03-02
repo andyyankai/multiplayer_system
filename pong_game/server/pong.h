@@ -67,6 +67,11 @@ private:
 	playerMiddle p4;
 	ball b;
 	score s;
+	int lag1;
+	int lag2;
+	int lag3;
+	int lag4;
+	
 };
 
 
