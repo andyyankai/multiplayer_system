@@ -328,7 +328,11 @@ var render = function () {
         context.fillText("PLAYER 1", 5, 15);
         context.fillText(clientManager.username, 5, 35);
         context.fillText("PLAYER 2", 810, 15);
-        context.fillText(clientManager.opponentUsername, 800, 35);
+        context.fillText(clientManager.opponent1Username, 800, 35);
+        context.fillText("PLAYER 3", 810, 15);
+        context.fillText(clientManager.opponent2Username, 800, 35);
+        context.fillText("PLAYER 4", 810, 15);
+        context.fillText(clientManager.opponent3Username, 800, 35);
         context.fillText(clientManager.ping, 10, height - 20); //toString()
 
     // THE CENTER LINE
@@ -342,6 +346,8 @@ var render = function () {
     // RENDERING ALL OF THE OBJECTS
     player.render();
     player2.render();
+	player3.render();
+	player4.render();
     ball.render();
 };
 
@@ -349,17 +355,47 @@ var render = function () {
 var update = function () {
    
 
-    if (clientManager.playerOne){ // If you are player one then you are able to update it, so you can move the paddle
+    if (clientManager.playerNum == 1){ // If you are player one then you are able to update it, so you can move the paddle
         player.update();
         clientManager.send(['game-state', player.paddle.x, player.paddle.y]);
-        player2.paddle2.x = clientManager.opponentPx;
-        player2.paddle2.y = clientManager.opponentPy;
-    } else {
+        player.paddle2.x = clientManager.opponent1Px;
+        player.paddle2.y = clientManager.opponent1Py;
+        player.paddle3.x = clientManager.opponent2Px;
+        player.paddle3.y = clientManager.opponent2Py;
+        player.paddle4.x = clientManager.opponent3Px;
+        player.paddle4.y = clientManager.opponent3Py;
+    } 
+    if (clientManager.playerNum == 2){
         player2.update();
-        clientManager.send(['game-state', player2.paddle2.x, player2.paddle2.y]);
-        player.paddle.x = clientManager.opponentPx;
-        player.paddle.y = clientManager.opponentPy;
+        clientManager.send(['game-state', player2.paddle.x, player2.paddle.y]);
+        player2.paddle.x = clientManager.opponent1Px;
+        player2.paddle.y = clientManager.opponent1Py;
+        player2.paddle3.x = clientManager.opponent2Px;
+        player2.paddle3.y = clientManager.opponent2Py;
+        player2.paddle4.x = clientManager.opponent3Px;
+        player2.paddle4.y = clientManager.opponent3Py;
     }
+    if (clientManager.playerNum == 3){
+        player3.update();
+        clientManager.send(['game-state', player3.paddle.x, player3.paddle.y]);
+        player3.paddle.x = clientManager.opponent1Px;
+        player3.paddle.y = clientManager.opponent1Py;
+        player3.paddle2.x = clientManager.opponent2Px;
+        player3.paddle2.y = clientManager.opponent2Py;
+        player3.paddle4.x = clientManager.opponent3Px;
+        player3.paddle4.y = clientManager.opponent3Py;
+    }
+    if (clientManager.playerNum == 4){
+        player4.update();
+        clientManager.send(['game-state', player3.paddle.x, player3.paddle.y]);
+        player4.paddle.x = clientManager.opponent1Px;
+        player4.paddle.y = clientManager.opponent1Py;
+        player4.paddle2.x = clientManager.opponent2Px;
+        player4.paddle2.y = clientManager.opponent2Py;
+        player4.paddle3.x = clientManager.opponent3Px;
+        player4.paddle3.y = clientManager.opponent3Py;
+    }
+
 
 };
 

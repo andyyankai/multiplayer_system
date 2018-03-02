@@ -129,12 +129,18 @@ void startGame()
 	std::cout << "I'm sending my messages now! " << toSend << std::endl;
 	std::string opponentName = "opponent," + usernames.find(playerInGame)->second;
 	std::string opponentName2 = "opponent," + usernames.find(playerInGame2)->second;
-	std::cout << "Player ones opponent: " << opponentName2 << std::endl;
-	std::cout << "Player two opponent: " << opponentName << std::endl;
+    std::string opponentName3 = "opponent," + usernames.find(playerInGame3)->second;
+    std::string opponentName4 = "opponent," + usernames.find(playerInGame4)->second;
+    std::cout << "Player ones: " << opponentName << std::endl;
+	std::cout << "Player opponent1: " << opponentName2 << std::endl;
+    std::cout << "Player opponent2: " << opponentName3 << std::endl;
+    std::cout << "Player opponent3: " << opponentName4 << std::endl;
 	sendPing();
 
-	server.wsSend(clientIDs[playerInGame], opponentName2);
-	server.wsSend(clientIDs[playerInGame2], opponentName);
+	server.wsSend(clientIDs[playerInGame], opponentName);
+	server.wsSend(clientIDs[playerInGame2], opponentName2);
+    server.wsSend(clientIDs[playerInGame3], opponentName3);
+    server.wsSend(clientIDs[playerInGame4], opponentName4);
 
 
 
@@ -211,6 +217,10 @@ void openHandler(int clientID)
 		playerInGame = clientID;
 	else if(playerInGame2 == -1)
 		playerInGame2 = clientID;
+    else if(playerInGame3 == -1)
+        playerInGame3 = clientID;
+    else if(playerInGame4 == -1)
+        playerInGame4 = clientID;
 
     server.wsSend(clientID, toSend);
 	}
@@ -293,9 +303,21 @@ void messageHandler(int clientID, string message)
 					py2 = stof(v[2]);
 				p2 = true;
 				//std::cout<<"I've gotten player two's update! "<< std::endl;
-			}
+            }else if(clientID == 2)
+            {
+                px2 = stof(v[1]);
+                py2 = stof(v[2]);
+                p3 = true;
+                //std::cout<<"I've gotten player three's update! "<< std::endl;
+            }else if(clientID == 3)
+            {
+                px2 = stof(v[1]);
+                py2 = stof(v[2]);
+                p4 = true;
+                //std::cout<<"I've gotten player four's update! "<< std::endl;
+            }
 
-			if(p1 && p2)
+			if(p1 && p2 && p3 && p4)
 			{
 				std::string toSend;
 				std::string playerTwo;
@@ -316,6 +338,8 @@ void messageHandler(int clientID, string message)
 
 				p1 = false;
 				p2 = false;
+                p3 = false;
+                p4 = false;
 
 				
 				//That or we can condsider the fact that we wait on both players to input as the delay.
