@@ -286,7 +286,7 @@ var animate = window.requestAnimationFrame || window.webkitRequestAnimationFrame
 // CREATE THE CANVAS AND ESTABLISH VARIABLES
 var canvas = document.createElement("canvas");
 var width = 900; 
-var height = 400; 
+var height = 900; 
 canvas.width = width;
 canvas.height = height;
 var context = canvas.getContext('2d');
@@ -299,9 +299,11 @@ var ball = new Ball(clientManager.ballX, clientManager.ballY);
 var keysDown = {};
 var score1 = clientManager.score1;
 var score2 = clientManager.score2;
+var score3 = clientManager.score3;
+var score4 = clientManager.score4;
 
 // PLACE HOLDER TO THEN REPLACE THE ACTUAL THING FROM CLIENT MANAGER
-var playerOne = true;
+var playerNum = 0;
 //------------------------------------------------------------------
 
 // RENDER ITEMS
@@ -315,29 +317,20 @@ var render = function () {
     context.fillStyle = "#FFFFFF";
     context.font = "20pt Courier New";
 
-    // Updating code to hold two separate scores
-    // context.fillText("SCORE: " + clientManager.score.toString() + " %", 406, 15);
     context.fillText(clientManager.score1, 225, 25); //toString()
-    context.fillText(clientManager.score2, 675, 25); //toString()
+    context.fillText(clientManager.score2, 300, 25); //toString()
+	context.fillText(clientManager.score3, 500, 25); //toString()
+	context.fillText(clientManager.score4, 675, 25); //toString()
 
     context.fillStyle = "#FFFFFF";
     context.font = "12pt Courier New";
-    if (clientManager.playerOne)
-    {
+
         context.fillText("PLAYER 1", 5, 15);
         context.fillText(clientManager.username, 5, 35);
         context.fillText("PLAYER 2", 810, 15);
         context.fillText(clientManager.opponentUsername, 800, 35);
         context.fillText(clientManager.ping, 10, height - 20); //toString()
-    }
-    else
-    {
-        context.fillText("PLAYER 1", 5, 15);
-        context.fillText(clientManager.opponentUsername, 5, 35);
-        context.fillText("PLAYER 2", 810, 15);
-        context.fillText(clientManager.username, 800, 35);
-        context.fillText(clientManager.ping, width/2 + 10, height - 20); //toString()
-    }
+
     // THE CENTER LINE
     context.fillStyle = "#FFFFFF";
     context.fillRect(width / 2, 0, 2, height);
@@ -361,7 +354,7 @@ var update = function () {
         clientManager.send(['game-state', player.paddle.x, player.paddle.y]);
         player2.paddle2.x = clientManager.opponentPx;
         player2.paddle2.y = clientManager.opponentPy;
-    } else { // If not then only paddle two will update
+    } else {
         player2.update();
         clientManager.send(['game-state', player2.paddle2.x, player2.paddle2.y]);
         player.paddle.x = clientManager.opponentPx;
@@ -396,6 +389,24 @@ function Paddle2(x, y, width, height) {
     this.y_speed = 0;
 }
 
+function Paddle3(x, y, width, height) {
+    this.x = x;
+    this.y = y;
+    this.width = width;
+    this.height = height;
+    this.x_speed = 0;
+    this.y_speed = 0;
+}
+
+function Paddle4(x, y, width, height) {
+    this.x = x;
+    this.y = y;
+    this.width = width;
+    this.height = height;
+    this.x_speed = 0;
+    this.y_speed = 0;
+}
+
 // RENDER PADDLE FUNCTION
 Paddle.prototype.render = function () {
     context.fillStyle = "#FF0033";
@@ -404,6 +415,18 @@ Paddle.prototype.render = function () {
 
 // RENDER PADDLE 2 FUNCTION
 Paddle2.prototype.render = function () {
+    context.fillStyle = "#FF0033";
+    context.fillRect(this.x, this.y, this.width, this.height);
+};
+
+// RENDER PADDLE 3 FUNCTION
+Paddle3.prototype.render = function () {
+    context.fillStyle = "#FF0033";
+    context.fillRect(this.x, this.y, this.width, this.height);
+};
+
+// RENDER PADDLE 4 FUNCTION
+Paddle4.prototype.render = function () {
     context.fillStyle = "#FF0033";
     context.fillRect(this.x, this.y, this.width, this.height);
 };
@@ -417,8 +440,8 @@ Paddle.prototype.move = function (x, y) {
     if (this.y < 0) { //AT THE TOP
         this.y = 0;
         this.y_speed = 0;
-    } else if (this.y + this.height > 400) { // AT THE BOTTOM 
-        this.y = 400 - this.height;
+    } else if (this.y + this.height > 900) { // AT THE BOTTOM 
+        this.y = 900 - this.height;
         this.y_speed = 0; 
     }
 };
@@ -432,9 +455,39 @@ Paddle2.prototype.move = function (x, y) {
     if (this.y < 0) { //AT THE TOP
         this.y = 0;
         this.y_speed = 0;
-    } else if (this.y + this.height > 400) { // AT THE BOTTOM 
-        this.y = 400 - this.height;
+    } else if (this.y + this.height > 900) { // AT THE BOTTOM 
+        this.y = 900 - this.height;
         this.y_speed = 0;
+    }
+};
+
+// PADDLE 3 MOVEMENT
+Paddle3.prototype.move = function (x, y) {
+    this.x += y;
+    this.y += x;
+    this.x_speed = x;
+    this.y_speed = y;
+    if (this.x < 0) { //AT THE LEFT
+        this.x = 0;
+        this.x_speed = 0;
+    } else if (this.x + this.width > 900) { // AT THE RIGHT 
+        this.x = 900 - this.height;
+        this.x_speed = 0;
+    }
+};
+
+// PADDLE 4 MOVEMENT
+Paddle4.prototype.move = function (x, y) {
+    this.x += y;
+    this.y += x;
+    this.x_speed = x;
+    this.y_speed = y;
+    if (this.x < 0) { //AT THE LEFT
+        this.x = 0;
+        this.x_speed = 0;
+    } else if (this.x + this.width > 900) { // AT THE RIGHT 
+        this.x = 900 - this.height;
+        this.x_speed = 0;
     }
 };
 
@@ -450,6 +503,18 @@ function Player2()
     this.paddle2 = new Paddle2(880, height / 2, 10, 80);
 }
 
+// CREATE THE 3 PLAYER 
+function Player3()
+{
+    this.paddle3 = new Paddle3(width / 2, 10, 10, 80);
+}
+
+// CREATE THE 4 PLAYER 
+function Player4()
+{
+    this.paddle4 = new Paddle4(width / 2, 880, 10, 80);
+}
+
 // RENDER PLAYER 1 PADDLE
 Player.prototype.render = function () {
     this.paddle.render();
@@ -458,6 +523,16 @@ Player.prototype.render = function () {
 // RENDER PLAYER 2 PADDLE
 Player2.prototype.render = function () {
     this.paddle2.render();
+};
+
+// RENDER PLAYER 3 PADDLE
+Player3.prototype.render = function () {
+    this.paddle3.render();
+};
+
+// RENDER PLAYER 4 PADDLE
+Player4.prototype.render = function () {
+    this.paddle4.render();
 };
 
 // APPLY PADDLE MOVEMENT [RIGHT SIDE]
@@ -484,6 +559,30 @@ Player2.prototype.update = function () {
     }
 };
 
+// APPLY PADDLE 3 MOVEMENT [LEFT SIDE]
+Player2.prototype.update = function () {
+    for (var key in keysDown) {
+        var value = Number(key);
+        if (value == 37) {
+            this.paddle3.move(-4, 0);
+        } else if (value == 39) {
+            this.paddle3.move(4, 0);
+        }
+    }
+};
+
+// APPLY PADDLE 4 MOVEMENT [LEFT SIDE]
+Player4.prototype.update = function () {
+    for (var key in keysDown) {
+        var value = Number(key);
+        if (value == 37) {
+            this.paddle4.move(4, 0);
+        } else if (value == 39) {
+            this.paddle4.move(-4, 0);
+        }
+    }
+};
+
 
 // CREATE THE BALL
 function Ball(x,y) {
@@ -500,15 +599,6 @@ Ball.prototype.render = function () {
 // THIS IS WHAT WILL MAKE EVERYTHING WORK
 document.body.appendChild(canvas);
 animate(step);
-
-// CHECKS FOR THE PRESSING OF THE BUTTONS WHEN MOVING THE PADDLE
-window.addEventListener("keydown", function (event) {
-    keysDown[event.keyCode] = true;
-});
-
-window.addEventListener("keyup", function (event) {
-    delete keysDown[event.keyCode];
-});
 
 } // Connect function END
 </script>
