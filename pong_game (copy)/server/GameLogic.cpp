@@ -18,7 +18,7 @@ GameLogic::GameLogic()
 	height = 900;
 	width = 900;
 	bx = 450;
-	by = 200;
+	by = 450;
 	bounceBottom = false;
 	bounceTop = false;
 }
@@ -248,6 +248,8 @@ bool GameLogic::checkCollision(float bx, float by, float px, float py, float px1
 		bounceBottom = true;
 		return true;
 	}
+	
+	
 
 	return false;
 }

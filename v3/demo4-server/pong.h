@@ -1,12 +1,12 @@
 #ifndef PONG_H
 #define PONG_H
 #include <string>
-class Pong {
+class Pong{
 public:
-	Pong(unsigned int width, unsigned int height);
+	Pong(unsigned int width, unsigned int height) ;
 	~Pong();
 	void init();
-	void movePlayer(unsigned int user, unsigned int keyCode,unsigned int latency);
+	void movePlayer(unsigned int user, unsigned int keyCode) ;
 	bool update();
 	std::ostringstream trackmovement();
 
@@ -26,8 +26,7 @@ private:
 		velocity v;
 		unsigned int width = 20;
 		unsigned int height = 100;
-		unsigned int latency = 0;
-
+	
 	};
 	struct playerMiddle {
 		double x;
@@ -39,7 +38,6 @@ private:
 		velocity v;
 		unsigned int width = 100;
 		unsigned int height = 20;
-		unsigned int latency = 0;
 
 	};
 
@@ -60,7 +58,7 @@ private:
 		unsigned int p2 = 0;
 		unsigned int p3 = 0;
 		unsigned int p4 = 0;
-
+		
 	};
 
 	player p;

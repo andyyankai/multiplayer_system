@@ -6,7 +6,7 @@ public:
 	Pong(unsigned int width, unsigned int height);
 	~Pong();
 	void init();
-	void movePlayer(unsigned int user, unsigned int keyCode,unsigned int latency);
+	void movePlayer(unsigned int user, unsigned int keyCode, unsigned int latency);
 	bool update();
 	std::ostringstream trackmovement();
 

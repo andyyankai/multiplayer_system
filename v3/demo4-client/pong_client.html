@@ -1,231 +1,233 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
 <head>
     <meta charset='UTF-8' />
     <title>Pong</title>
     <style>
-        input, textarea {
-            border: 1px solid #990033;
-            margin: 5px;
-            padding: 0px
-        }
+        input, textarea {border:1px solid #990033; margin:5px;padding:0px}
+	#body {max-width:850px; margin:auto; color:mediumpurple}
+	body {
 
-        #body {
-            max-width: 850px;
-            margin: auto;
-            color: mediumpurple
-        }
+	    background-color:#000000;;
+	    background-repeat: repeat;
+	}
+	
+	.container {
+		color: #ff0000;
+		position: absolute;
+	    border: 2px solid #2700e8;
+	    background-color: #000000;
+	    border-radius: 5px;
+	    padding: 10px;
+	    margin: 10px 0;
+	    width: 250px;
+	    height: 250px;
+	}
 
-        body {
-            background-color: #000000;
-            background-repeat: repeat;
-        }
+	.darker {
+	    border-color: #ccc;
+	    background-color: #ddd;
+	}
 
-        .container {
-            color: #ff0000;
-            position: absolute;
-            border: 2px solid #2700e8;
-            background-color: #000000;
-            border-radius: 5px;
-            padding: 10px;
-            margin: 10px 0;
-            width: 250px;
-            height: 250px;
-        }
+	.container::after {
+	    content: "";
+	    clear: both;
+	    display: table;
+	}
 
-        .darker {
-            border-color: #ccc;
-            background-color: #ddd;
-        }
+	.time-right {
+	    float: right;
+	    color: #F44;
+	}
 
-        .container::after {
-            content: "";
-            clear: both;
-            display: table;
-        }
+	.log-text {
+		margin-top: 5px;
+		height: 90%;
+		width: 100%;
+		padding-top: 10px;
+		overflow-y:scroll;
+		
 
-        .time-right {
-            float: right;
-            color: #F44;
-        }
+	}
+	
+	::-webkit-scrollbar {
+	    width: 10px;
+	}
 
-        .log-text {
-            margin-top: 5px;
-            height: 90%;
-            width: 100%;
-            padding-top: 10px;
-            overflow-y: scroll;
-        }
+	/* Track */
+	::-webkit-scrollbar-track {
+	    box-shadow: inset 0 0 5px grey; 
+	    border-radius: 10px;
+	}
+	 
+	/* Handle */
+	::-webkit-scrollbar-thumb {
+	    background: red; 
+	    border-radius: 10px;
+	}
 
-        ::-webkit-scrollbar {
-            width: 10px;
-        }
+	/* Handle on hover */
+	::-webkit-scrollbar-thumb:hover {
+	    background: #b30000; 
+	}
 
-        /* Track */
-        ::-webkit-scrollbar-track {
-            box-shadow: inset 0 0 5px grey;
-            border-radius: 10px;
-        }
+	.title {
+		color:blue; font-size:75px; font-family:Consolas; margin-top:5px; margin-bottom:0px;
+		font-family: futura;
+		font-style: italic;
+		width:100%;
+		margin: 0 auto;
+		text-align: center;      
+		color:#313131;
+		-webkit-animation:colorchange 5s infinite alternate;
+      
+      
+	    }
 
-        /* Handle */
-        ::-webkit-scrollbar-thumb {
-            background: red;
-            border-radius: 10px;
-        }
-
-            /* Handle on hover */
-            ::-webkit-scrollbar-thumb:hover {
-                background: #b30000;
-            }
-
-        .title {
-            color: blue;
-            font-size: 75px;
-            font-family: Consolas;
-            margin-top: 5px;
-            margin-bottom: 0px;
-            font-family: futura;
-            font-style: italic;
-            width: 100%;
-            margin: 0 auto;
-            text-align: center;
-            color: #313131;
-            -webkit-animation: colorchange 5s infinite alternate;
-        }
-
-        @-webkit-keyframes colorchange {
-            0% {
-                color: blue;
-            }
-
-            10% {
-                color: #8e44ad;
-            }
-
-            20% {
-                color: #1abc9c;
-            }
-
-            30% {
-                color: #d35400;
-            }
-
-            40% {
-                color: blue;
-            }
-
-            50% {
-                color: #34495e;
-            }
-
-            60% {
-                color: blue;
-            }
-
-            70% {
-                color: #2980b9;
-            }
-
-            80% {
-                color: #f1c40f;
-            }
-
-            90% {
-                color: #2980b9;
-            }
-
-            100% {
-                color: pink;
-            }
-        }
-
-        .setting-box {
-        }
-
-        .submit-bot {
-            padding-right: 50px;
-            text-align: center;
-            width: 30%;
-            background-color: #013307;
-            color: #ff0000;
-            font-size: 30px;
-            font-weight: bold;
-            padding: 14px 20px;
-            margin: 8px 0;
-            border: none;
-            border-radius: 30px;
-            cursor: pointer;
-        }
-
-        input[type=text], textarea {
-            -webkit-transition: all 0.30s ease-in-out;
-            -moz-transition: all 0.30s ease-in-out;
-            -ms-transition: all 0.30s ease-in-out;
-            -o-transition: all 0.30s ease-in-out;
-            outline: none;
-            padding: 3px 0px 3px 3px;
-            margin: 5px 1px 3px 0px;
-            border: 1px solid #990033;
-            border-radius: 10px;
-        }
-
-            input[type=text]:focus, textarea:focus {
-                box-shadow: 0 0 5px rgba(81, 203, 238, 1);
-                padding: 3px 0px 3px 3px;
-                margin: 5px 1px 3px 0px;
-                border: 5px solid rgba(81, 203, 238, 1);
-                border-radius: 25px;
-            }
-
-        .select-title {
-            margin-top: 5px;
-            color: #ff2828;
-        }
-
-        .textarea {
-            border-color: #EEEEEE;
-            border-style: solid;
-            border-width: 2px;
-            width: 95%;
-            min-height: 550px;
-            padding: 30px;
-            margin-top: 28px;
-            font-family: Times-Italic;
-            font-size: 19px;
-            line-height: 27px;
-            text-align: left;
-            resize: none;
-            color: rgba(113,113,113, 0.5);
-            background: transparent;
-        }
-
-        .game-box {
-            border-color: #d412c5;
-            border-style: dotted;
-            border-width: 2px;
-        }
+	    @-webkit-keyframes colorchange {
+	      0% {
+		
+		color: blue;
+	      }
+	      
+	      10% {
+		
+		color: #8e44ad;
+	      }
+	      
+	      20% {
+		
+		color: #1abc9c;
+	      }
+	      
+	      30% {
+		
+		color: #d35400;
+	      }
+	      
+	      40% {
+		
+		color: blue;
+	      }
+	      
+	      50% {
+		
+		color: #34495e;
+	      }
+	      
+	      60% {
+		
+		color: blue;
+	      }
+	      
+	      70% {
+		
+		color: #2980b9;
+	      }
+	      80% {
+	     
+		color: #f1c40f;
+	      }
+	      
+	      90% {
+	     
+		color: #2980b9;
+	      }
+	      
+	      100% {
+		
+		color: pink;
+	      }
+		
+	}
+	
+	.setting-box {
+	    
+	}
+	
+	.submit-bot {
+	    padding-right: 50px;
+	    text-align: center;
+	    width: 30%;
+	    background-color: #013307;
+	    color: #ff0000;
+	    font-size: 30px;
+	    font-weight: bold;
+	    padding: 14px 20px;
+	    margin: 8px 0;
+	    border: none;
+	    border-radius: 30px;
+	    cursor: pointer;
+	}
+	
+	input[type=text], textarea {
+	  -webkit-transition: all 0.30s ease-in-out;
+	  -moz-transition: all 0.30s ease-in-out;
+	  -ms-transition: all 0.30s ease-in-out;
+	  -o-transition: all 0.30s ease-in-out;
+	  outline: none;
+	  padding: 3px 0px 3px 3px;
+	  margin: 5px 1px 3px 0px;
+	  border: 1px solid #990033;
+	  border-radius: 10px;
+	}
+	 
+	input[type=text]:focus, textarea:focus {
+	  box-shadow: 0 0 5px rgba(81, 203, 238, 1);
+	  padding: 3px 0px 3px 3px;
+	  margin: 5px 1px 3px 0px;
+	  border: 5px solid rgba(81, 203, 238, 1);
+	  border-radius: 25px;
+	}
+	
+	.select-title {
+		margin-top: 5px;
+		color : #ff2828;
+	}
+	.textarea {
+	  border-color: #EEEEEE;
+	  border-style: solid;
+	  border-width: 2px;
+	  width: 95%;
+	  min-height: 550px;
+	  padding: 30px;
+	  margin-top: 28px;
+	  font-family: Times-Italic;
+	  font-size: 19px;
+	  line-height: 27px;
+	  text-align: left;
+	  resize: none;
+	  color: rgba(113,113,113, 0.5);
+	  background: transparent;
+	}
+	
+	.game-box {
+		border-color: #d412c5;
+	  border-style: dotted;
+	  border-width: 2px;
+	}
     </style>
 </head>
 
 <body align="center">
-    <div class="container">
-        <span class="time-right">Game Log</span>
-        <p class="log-text" id='log' name='log'><br></p>
-    </div>
+<div class="container">
+  <span class="time-right">Game Log</span>
+  <p class="log-text" id='log' name='log'><br></p>
+</div>
 
     <center>
 
         <div class="title"> PONG GAME </div>
         <div style="width:400px; height:130px; border:3px dashed #fb0b0b;">
-            <p> <font size="2" face="monospace" color="#00FFFF"> CREATORS:<br />Kai Yan #24684490<br />Xiyu Wang #19001614<br />Yuanqin Fan #34137914<br />Yian Li #68342735</font></p>
+		<p> <font size="2" face="monospace" color="#00FFFF"> CREATORS:<br />Kai Yan #24684490<br />Xiyu Wang #19001614<br />Yuanqin Fan #34137914<br />Yian Li #68342735</font></p>
         </div>
-
+        
     </center>
 
 
     <div>
         <div class="select-title">Server ip</div>
-
+        
         <input style="background-color: #3CBC8D;" type='text' id='ip' name='ip' />
         <script type="text/javascript">
 			var elem = document.getElementById("ip");
@@ -234,34 +236,33 @@
 
 
         <div class="select-title">Server port</div>
-
-        <input style="background-color: #3CBC8D;" type='text' id='port' name='port' />
+        
+        <input style="background-color: #3CBC8D;"type='text' id='port' name='port' />
         <script type="text/javascript">
 			var elem = document.getElementById("port");
-			elem.value = "7347";
+			elem.value = "8000";
         </script>
 
         <div class="select-title">Game ID</div>
-
+        
         <input style="background-color: #3CBC8D;" type='text' id='gameid' name='gameid' />
 
     </div>
     <div align="center">
-        <div class="submit-bot" id='cntBtn' onclick="connect();">
-            Connect
-        </div>
+    	<div class="submit-bot" id='cntBtn' onclick="connect();">Connect
+    	</div>
     </div>
-
-
+    
+    
     <div class="game-box" id="game_canvas">
-        <script src="gameui.js"></script>
+    <script src="gameui.js"></script>
     </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
     <script src="gameui.js"></script>
     <script src="fancywebsocket.js"></script>
     <script>
-
+   
     		var ar=new Array(33,34,35,36,37,38,39,40);
 
 		$(document).keydown(function(e) {
@@ -284,6 +285,7 @@
 		var rightArrow = 39;
 		var debug = false;
 		var offset = 0;
+		var offset2 = 0;
 		function log( text ) {
 			$log = $('#log');
 			//Add text to log
@@ -297,7 +299,7 @@
 		}
 
         function connect(){
-
+        
         	if (gameState == true)
         	{
         		document.getElementById("cntBtn").disabled = false;
@@ -317,7 +319,7 @@
 			        var d = new Date();
 			        send(d.getTime() + "," + event.which);
 			        offset += event.which == upArrow ? -15 : 15;
-
+                    
 			    }
 			    else if(event.which==leftArrow||event.which==rightArrow)
 			    {
@@ -345,7 +347,7 @@
 			//Log any messages sent from server
 			Server.bind('message', function( payload ) {
 			    if (payload =="connection refused, 4 players are already playing;<br>") {
-			        log(payload);
+			        log(payload); 
 			        log("<br>");
 			    }
 			    else if (payload.indexOf("Move confirmed") > -1) {
@@ -366,6 +368,16 @@
 
 			        ball.update(res[8], res[9]);
 
+                    /*
+			        player.update(parseInt(res[0]), parseInt(res[1]), offset);
+			        player2.update(parseInt(res[2]), parseInt(res[3]), offset);
+			        player3.update(parseInt(res[4]), parseInt(res[5]), offset2);
+			        player4.update(parseInt(res[6]), parseInt(res[7]), offset2);
+
+                    */
+
+
+                    
 			        if (res[18] == 0) {
 			            player.update(parseInt(res[0]), parseInt(res[1]), offset);
 			            player2.update(parseInt(res[2]), parseInt(res[3]), 0);
@@ -394,10 +406,11 @@
 			            player4.update(parseInt(res[6]), parseInt(res[7]), offset2);
 
 			        }
+                    
+			        console.log(res);
 
+			        score.update(res[14], res[15], res[16], res[17], res[10], res[11], res[12], res[13]); //score(playername,score)
 
-			        score.update(res[18], res[19], res[20], res[21], res[10], res[11], res[12], res[13]); //score(playername,score)
-			        latency.update(res[14], res[15], res[16], res[17]);
 			    }
 			    else {
 			        log(payload);

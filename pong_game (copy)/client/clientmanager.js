@@ -1,4 +1,3 @@
-
 function OnOpen(MSG) {
 
 };
@@ -8,14 +7,13 @@ function OnClose(MSG) {
 };
 
 function OnMessage(MSG, ClientManager) {
-	console.log("message event");
-
     var values = MSG.data.split(",");
     var temp = values[0];
+    log(temp);
 
 	if (temp.toString() == "start-game")
 	{
-		log('Connected.<br>');
+		log('Start Game.<br>');
 	}
 
 	else if (temp.toString() == "game-state")
@@ -30,16 +28,18 @@ function OnMessage(MSG, ClientManager) {
 
 	else if (temp.toString() == "Deny")
 	{
-		
+		log('Connection Deny.<br>');
 	}
 
 	else if (temp == "username")
 	{
+		log('Username.<br>');
 		ClientManager.username = values[1];
 	}
 
 	else if (temp == "player-number")
 	{
+		log('Connected.<br>');
 		ClientManager.playerNumber = values[1];
 
 		if (values[1] == "playerone")
@@ -115,7 +115,7 @@ var ClientManager = function (IP, Port, Protocols, Username) {
 
 	this.Connection = new WebSocket('ws://' + IP + ':' + Port);
 
-	// log('Created the websocket');
+	// log('connected');
 
 	this.Start_Game = 'start-game';
 	this.Deny_Access = 'Deny';
@@ -138,17 +138,25 @@ var ClientManager = function (IP, Port, Protocols, Username) {
 	};
 
 	this.ballX = 450;
-	this.ballY = 200;
+	this.ballY = 450;
 	this.paddleX = 880;
 	this.paddleY = 200;
 	this.score1 = 0;
 	this.score2 = 0;
+	this.score3 = 0;
+	this.score4 = 0;
 	this.username = Username;
-	this.opponentUsername;
+	this.opponent1Username;
+	this.opponent2Username;
+	this.opponent3Username;
 	this.playerNumber;
 	this.playerOne;
-	this.opponentPx = 10;
-	this.opponentPy = 200;
+	this.opponent1Px = 10;
+	this.opponent1Py = 200;
+	this.opponent2Px = 200;
+	this.opponent2Py = 10;
+	this.opponent3Px = 200;
+	this.opponent3Py = 10;
 	this.ping = "Ping: 0 ms";
 
 	this.hoursNow = 0;

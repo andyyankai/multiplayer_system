@@ -44,9 +44,13 @@ float py4;
 //after both are true run update and send back messages
 bool p1;
 bool p2;
+bool p3;
+bool p4;
 
 int playerInGame = -1;
 int playerInGame2 = -1;
+int playerInGame3 = -1;
+int playerInGame4 = -1;
 
 int playerCount = 0;
 
@@ -125,16 +129,19 @@ void startGame()
 
 	p1 = false;
 	p2 = false;
+	p3 = false;
+	p4 = false;
+	
 	gameStarted = true;
 	std::cout << "I'm sending my messages now! " << toSend << std::endl;
 	std::string opponentName = "opponent," + usernames.find(playerInGame)->second;
 	std::string opponentName2 = "opponent," + usernames.find(playerInGame2)->second;
-    std::string opponentName3 = "opponent," + usernames.find(playerInGame3)->second;
-    std::string opponentName4 = "opponent," + usernames.find(playerInGame4)->second;
-    std::cout << "Player ones: " << opponentName << std::endl;
-	std::cout << "Player opponent1: " << opponentName2 << std::endl;
-    std::cout << "Player opponent2: " << opponentName3 << std::endl;
-    std::cout << "Player opponent3: " << opponentName4 << std::endl;
+	std::string opponentName3 = "opponent," + usernames.find(playerInGame3)->second;
+	std::string opponentName4 = "opponent," + usernames.find(playerInGame4)->second;
+	std::cout << "Player ones: " << opponentName << std::endl;
+	std::cout << "Player two: " << opponentName2 << std::endl;
+	std::cout << "Player three: " << opponentName3 << std::endl;
+	std::cout << "Player four: " << opponentName4 << std::endl;
 	sendPing();
 
 	server.wsSend(clientIDs[playerInGame], opponentName);
@@ -150,86 +157,65 @@ void startGame()
 
 void checkForMatches()
 {
+	std::cout << "check matches" << playerNumber << std::endl;
 	if (!gameStarted)
 	{
-		bool nextPlayer = false;
-		if (usernames.size() > 1)
+		if (playerNumber == 5)
 		{
-			for (auto& check : usernames)
-			{
-				if (!nextPlayer)
-				{
-					playerInGame = check.first;
-					nextPlayer = true;
-				}
-				else
-				{
-					playerInGame2 = check.first;
-					break;
-				}
-
-			}
+			std::cout << "gogo" << std::endl;
+			startGame();
 		}
-
-		std::string toSend = "player-number,playerone";
-		std::string toSend2 = "player-number,playertwo";
-
-
-		server.wsSend(playerInGame, toSend);
-		server.wsSend(playerInGame2, toSend2);
-		startGame();
 	}
 }
 
 
 void openHandler(int clientID)
 {
-	if (playerNumber > 3) {
+	if (playerNumber > 4) {
 	        std::cout << clientID << "Connection refused, 4 players are full!" << std::endl;
-	        server.wsSend(clientID, "connection refused, 4 players are already playing;");
+	        server.wsSend(clientID, "Deny");
 		server.wsClose(clientID);
-		return;
 	}
 	else
 	{
-	std::string toSend = "player-number,";
+		std::string toSend = "player-number,";
 
-	if(playerNumber == 1)
-	{
-		toSend += "playerone";
-	}
-	else if(playerNumber == 2)
-	{
-		toSend += "playertwo";
-	}
-	else if(playerNumber == 3)
-	{
-		toSend += "playerthree";
-	}
-	else
-	{
-		toSend += "playerfour";
-	}
+		if(playerNumber == 1)
+		{
+			toSend += "playerone";
+		}
+		else if(playerNumber == 2)
+		{
+			toSend += "playertwo";
+		}
+		else if(playerNumber == 3)
+		{
+			toSend += "playerthree";
+		}
+		else
+		{
+			toSend += "playerfour";
+		}
 
-	std::cout << "You're player: " << playerNumber << std::endl;
-	playerNumber++;
-	if(playerInGame == -1)
-		playerInGame = clientID;
-	else if(playerInGame2 == -1)
-		playerInGame2 = clientID;
-    else if(playerInGame3 == -1)
-        playerInGame3 = clientID;
-    else if(playerInGame4 == -1)
-        playerInGame4 = clientID;
+		std::cout << "You're player: " << playerNumber << std::endl;
+		playerNumber++;
+		if(playerInGame == -1)
+			playerInGame = clientID;
+		else if(playerInGame2 == -1)
+			playerInGame2 = clientID;
+		else if(playerInGame3 == -1)
+			playerInGame3 = clientID;
+		else if(playerInGame4 == -1)
+			playerInGame4 = clientID;
 
-    server.wsSend(clientID, toSend);
+		server.wsSend(clientID, toSend);
 	}
 }
 
 
 void closeHandler(int clientID)
 {
-	std::cout << "a player " << clientID << " has leaved.";
+	std::cout << "Player " << clientID << " has leaved.";
 	
 	playerCount--;
 	if((clientID == playerInGame || clientID == playerInGame2) && gameStarted)
@@ -246,7 +232,7 @@ void closeHandler(int clientID)
 	it = usernames.find(clientID);
 	usernames.erase(it);
 
-	std::cout << "Player has DC'd!!" << std::endl;
+	std::cout << "Player has left!" << std::endl;
 }
 
 /* called when a client sends a message to the server */
@@ -266,13 +252,24 @@ void messageHandler(int clientID, string message)
 			{
 				p1 = true;
 				std::cout <<"Player one has connected!" << std::endl;
-			}else if(clientID == playerInGame2)
+			}
+			else if(clientID == playerInGame2)
 			{
 				p2 = true;
 				std::cout <<"Player two has connected!" << std::endl;
 			}
+			else if(clientID == playerInGame3)
+			{
+				p3 = true;
+				std::cout <<"Player three has connected!" << std::endl;
+			}
+			else if(clientID == playerInGame4)
+			{
+				p4 = true;
+				std::cout <<"Player four has connected!" << std::endl;
+			}
 
-			if(p1 && p2)
+			if(p1 && p2 && p3 && p4)
 			{
 				startGame();
 			}
@@ -338,8 +335,8 @@ void messageHandler(int clientID, string message)
 
 				p1 = false;
 				p2 = false;
-                p3 = false;
-                p4 = false;
+				p3 = false;
+				p4 = false;
 
 				
 				//That or we can condsider the fact that we wait on both players to input as the delay.
@@ -413,6 +410,6 @@ int main(int argc, char *argv[])
     server.setOpenHandler(openHandler);
     server.setCloseHandler(closeHandler);
     server.setMessageHandler(messageHandler);
-    //server.setPeriodicHandler(periodicHandler);
+    server.setPeriodicHandler(periodicHandler);
     server.startServer(port);
 }

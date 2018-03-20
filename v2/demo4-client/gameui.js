@@ -1,16 +1,17 @@
 var context;
-var HEIGHT = 600;
-var WIDTH = 800;
+var HEIGHT=600;
+var WIDTH=800;
 var canvas;
 //players---------------------------
 var player = {
     width: 20, height: 100,
-    x: null, y: null,
-    update: function (x, y, offset) {
-        this.x = x; this.y = y; this.y += offset;
-        this.y = Math.max(Math.min(this.y, 600 - this.height), 0);
-    },
-    draw: function () { context.fillRect(this.x, this.y, this.width, this.height); }
+ x: null, y: null,
+ update:function(x,y,offset)
+ {
+     this.x = x; this.y = y; this.y += offset;
+     this.y = Math.max(Math.min(this.y,600-this.height),0);
+ },
+ draw: function () { context.fillRect(this.x, this.y, this.width, this.height); }
 };
 var player2 = {
     width: 20, height: 100,
@@ -45,7 +46,10 @@ var score = {
     playerID2: "", pscore2: 0,
     playerID3: "", pscore3: 0,
     playerID4: "", pscore4: 0,
-    update: function (pid, pid2, pid3, pid4, ps, ps2, ps3, ps4) {
+    update: function (pid,pid2,pid3,pid4, ps,ps2,ps3,ps4) {
+        console.log(pid2);
+        console.log(pid3);
+        console.log(ps);
         this.playerID = pid;
         this.playerID2 = pid2;
         this.playerID3 = pid3;
@@ -60,13 +64,15 @@ var score = {
         context.textAlign = 'center';
 
 
-        context.fillText(this.playerID + "'s score: " + this.pscore +
-		" " + this.playerID2 + "'s score: " + this.pscore2 +
+		context.fillText( this.playerID + "'s score: " + this.pscore+
+		" "+this.playerID2 + "'s score: " + this.pscore2+
 		" " + this.playerID3 + "'s score: " + this.pscore3 +
 		" " + this.playerID4 + "'s score: " + this.pscore4, WIDTH / 2, 200);
 
     }
 };
+
+
 var latency = {
     pl: 0,
     pl2: 0,
@@ -92,16 +98,18 @@ var latency = {
 
    }
 };
-var ball = {
-    x: null, y: null, radius: 20,
-    update: function (x, y) {
+
+
+var ball={
+    x:null, y:null, radius:20,
+    update:function(x,y){
         this.x = x;
         this.y = y;
     },
-    draw: function () {
+    draw:function(){
         context.beginPath();
-        context.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
-        context.fillStyle = "white";
+        context.arc(this.x,this.y,this.radius,0,2*Math.PI);
+        context.fillStyle="white";
         context.fill();
         context.stroke();
     }
@@ -128,7 +136,7 @@ function main() {
 
     ball.x = WIDTH / 2;
     ball.y = HEIGHT / 2;
-    var loop = function () {
+    var loop = function(){
         draw();
         window.requestAnimationFrame(loop, canvas);
     };
@@ -146,9 +154,9 @@ function draw() {
     player3.draw();
     player4.draw();
     score.draw();
-    latency.draw();
-
-
+    // latency.draw();
+    
+    
     context.restore();
 }
 main();

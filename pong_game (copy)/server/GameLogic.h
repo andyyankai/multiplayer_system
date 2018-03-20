@@ -1,8 +1,3 @@
-//Hector Martinez - 66831265
-//Jocyln Cruz - 20651754
-//Kevin Thomas Zimmerle - 54023710
-//Mari Rann - 24219846
-
 #pragma once
 #include <string>
 

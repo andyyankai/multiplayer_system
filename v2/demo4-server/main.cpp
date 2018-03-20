@@ -2,17 +2,25 @@
 #include <iostream>
 #include <string>
 #include <sstream>
-//#include <time.h>
+#include <time.h>
 #include "websocket.h"
 #include <vector>
 #include <queue>
 #include <chrono>
 #include "pong.h"
+#include <cstdlib>
 using namespace std;
+using namespace std::chrono;
 
 webSocket server;
 Pong*game;
 bool gameState = false;
+bool use_latency = true;	//currently cannot use this
+int latencyType1 = 0; // 0 == fixed, 1 = incremental, 2 = random	client->server
+int latencyType2 = 0; // 0 == fixed, 1 = incremental, 2 = random	server->client
+					  //remember to add to periodic handler
+#define INTERVAL_MS 10
+int interval_clocks = CLOCKS_PER_SEC * INTERVAL_MS / 1000;
 
 struct players {
 	int playerID;
@@ -25,19 +33,21 @@ struct players {
 	std::string playername4;
 };
 
-struct game_message {
+/* struct game_message {
 	unsigned int player;
 	unsigned long long time;
 	unsigned long long timeSent;
 	unsigned int keyCode;
 	unsigned int delay;
-};
+
+};*/
 
 players user;
-std::queue<game_message> msg;
+/*std::queue<game_message> msg;
 bool artificial_latency = false;
-bool fixed_latency = true;
-bool increased_latency = false;
+bool fixed_latency = false;
+bool increased_latency = true;*/
+
 
 
 /* called when a client connects */
@@ -49,8 +59,7 @@ void openHandler(int clientID) {
 		server.wsSend(clientID, "connection refused, 4 players are already playing;");
 		server.wsClose(clientID);
 	}
-	else {
-
+	else{
 		std::cout << clientID << " has joined the game";
 		if (clientIDs.size() == 4) {
 			user.playerID = clientIDs[0];
@@ -89,21 +98,57 @@ std::vector<std::string> split(const std::string &s, char delim) {
 	split(s, delim, elems);
 	return elems;
 }
-/* called when a client sends a message to the server */
-void messageHandler(int clientID, string message) {
-	ostringstream os;
-	os << "another player named" + message + "hasjoined!";
-	vector<int> clientIDs = server.getClientIDs();
-	server.wsSend(clientID, "You named: " + message + "has joined!");
-	for (int i = 0; i < clientIDs.size(); i++) {
-		if (clientIDs[i] != clientID)
-		{
-			server.wsSend(clientIDs[i], os.str());
+
+//==============message, inBuffer===================
+struct game_message {
+	unsigned int player;
+	unsigned long long time;
+	unsigned long long timeSent;
+	unsigned int keyCode;
+
+};
+//buffer
+
+
+
+//vector<pair<int, pair <int, long long> >> inBuffer;
+
+vector< pair<pair<int, int>, pair<int, long long>> > inBuffer;
+//pair (ID, pair(opcode,expected time))
+
+
+int latencyTime = 50;
+long long rlatency = 200;
+long long  slatency = 200;
+
+void getLatency(int type) {
+	int min = 50;
+	int max = 2000;
+
+
+	//fixed
+	if (type == 0) {
+		rlatency = 200;
+		slatency = 200;
+	}
+	//incremental
+	if (type == 1) {
+		if (latencyTime <= max) {
+			latencyTime += 50;
+			rlatency = latencyTime;
+			slatency = latencyTime;
 		}
 	}
+	//random
+	else if (type == 2) {
+		latencyTime = (rand() % (max - min + 1)) + min;
+		rlatency = latencyTime;
+		slatency = latencyTime;
+	}
+}
 
-
-
+/* called when a client sends a message to the server */
+void messageHandler(int clientID, string message) {
 	if (gameState == true)
 	{
 		std::vector<string> split_msg = split(message, ',');
@@ -127,19 +172,22 @@ void messageHandler(int clientID, string message) {
 		move.keyCode = std::stoi(split_msg[1]);
 		if (artificial_latency==true) {
 			move.delay = (rand() % 3 + 1) * 100;
+
+			
 		}
 		if (fixed_latency==true) {
-			move.delay = 40; 
+			move.delay = 40;
+
 		}
 		if (increased_latency==true) {
 			int max = 300;
 			int min = 100;
 			move.delay = 100;
+
 		}
-		
 		msg.push(move);
 	}
-	if (gameState == false) {
+	if(gameState==false){
 		if (clientID == 0) {
 			user.playername = message;
 		}
@@ -152,12 +200,19 @@ void messageHandler(int clientID, string message) {
 		else if (clientID == 3) {
 			user.playername4 = message;
 		}
-
-
-
+	
+		std::ostringstream os;
+		std::cout << "player named: " << message << " has joined!" << std::endl;
+		server.wsSend(clientID, os.str());
+		vector<int> clientIDs = server.getClientIDs();
 		if (clientIDs.size() == 4) {
+			std::cout << "Game start" << std::endl;
 			game = new Pong(800, 600);
 			gameState = true;
+			server.wsSend(user.playerID, "New Round");
+			server.wsSend(user.playerID2, "New Round");
+			server.wsSend(user.playerID3, "New Round");
+			server.wsSend(user.playerID4, "New Round");
 		}
 	}
 
@@ -188,10 +243,11 @@ void periodicHandler() {
 
 				}
 				msg.pop();
-			}
-			if (increased_latency==true) {
-				if (msg.front().delay < 300) { msg.front().delay += 20; }
-			}
+			 }
+			 if (increased_latency==true) {
+			 	if (msg.front().delay < 300) { msg.front().delay += 20; }
+			 }
+			
 		}
 
 

@@ -283,13 +283,14 @@ var animate = window.requestAnimationFrame || window.webkitRequestAnimationFrame
     window.setTimeout(callback, 1000 / 60)
 };
 
-// CREATE THE CANVAS AND ESTABLISH VARIABLES
+// game board create
 var canvas = document.createElement("canvas");
 var width = 900; 
 var height = 900; 
 canvas.width = width;
 canvas.height = height;
 var context = canvas.getContext('2d');
+
 var player = new Player();
 var player2 = new Player2();
 var player3 = new Player3();
@@ -302,42 +303,34 @@ var score2 = clientManager.score2;
 var score3 = clientManager.score3;
 var score4 = clientManager.score4;
 
-// PLACE HOLDER TO THEN REPLACE THE ACTUAL THING FROM CLIENT MANAGER
+// might be useful
 var playerNum = 0;
-//------------------------------------------------------------------
 
-// RENDER ITEMS
+// this part is for drawing the game board
 var render = function () {
-
-    // THE BOARD
-    context.fillStyle = "#003300";
+    context.fillStyle = "#000000";
     context.fillRect(0, 0, width, height);
-
-    // THE SCORE WRITING
-    context.fillStyle = "#FFFFFF";
-    context.font = "20pt Courier New";
-
-    context.fillText(clientManager.score1, 225, 25); //toString()
-    context.fillText(clientManager.score2, 300, 25); //toString()
-	context.fillText(clientManager.score3, 500, 25); //toString()
-	context.fillText(clientManager.score4, 675, 25); //toString()
-
     context.fillStyle = "#FFFFFF";
     context.font = "12pt Courier New";
-
-        context.fillText("PLAYER 1", 5, 15);
-        context.fillText(clientManager.username, 5, 35);
-        context.fillText("PLAYER 2", 810, 15);
-        context.fillText(clientManager.opponent1Username, 800, 35);
-        context.fillText("PLAYER 3", 810, 15);
-        context.fillText(clientManager.opponent2Username, 800, 35);
-        context.fillText("PLAYER 4", 810, 15);
-        context.fillText(clientManager.opponent3Username, 800, 35);
-        context.fillText(clientManager.ping, 10, height - 20); //toString()
-
-    // THE CENTER LINE
+    context.fillText("Score: ", 200, 15);
+    context.fillText("Score: ", 200, 30);
+    context.fillText("Score: ", 200, 45);
+    context.fillText("Score: ", 200, 60);
+    context.fillText(clientManager.score1, 280, 15);
+    context.fillText(clientManager.score2, 280, 30);
+    context.fillText(clientManager.score3, 280, 45);
+    context.fillText(clientManager.score4, 280, 60);
     context.fillStyle = "#FFFFFF";
-    context.fillRect(width / 2, 0, 2, height);
+    context.font = "12pt Courier New";
+    context.fillText("PLAYER 1", 5, 15);
+    context.fillText(clientManager.username, 100, 15);
+    context.fillText("PLAYER 2", 5, 30);
+    context.fillText(clientManager.opponent1Username, 100, 30);
+    context.fillText("PLAYER 3", 5, 45);
+    context.fillText(clientManager.opponent2Username, 100, 45);
+    context.fillText("PLAYER 4", 5, 60);
+    context.fillText(clientManager.opponent3Username, 100, 60);
+    context.fillText(clientManager.ping, 800, 15);
 
 
     ball.x = clientManager.ballX;
@@ -346,16 +339,14 @@ var render = function () {
     // RENDERING ALL OF THE OBJECTS
     player.render();
     player2.render();
-	player3.render();
-	player4.render();
+    player3.render();
+    player4.render();
     ball.render();
 };
 
-// UPDATING ACTIONS 
-var update = function () {
-   
 
-    if (clientManager.playerNum == 1){ // If you are player one then you are able to update it, so you can move the paddle
+var update = function () {
+    if (clientManager.playerNum == 1){ // move paddle depend on who u are
         player.update();
         clientManager.send(['game-state', player.paddle.x, player.paddle.y]);
         player.paddle2.x = clientManager.opponent1Px;
@@ -445,26 +436,26 @@ function Paddle4(x, y, width, height) {
 
 // RENDER PADDLE FUNCTION
 Paddle.prototype.render = function () {
-    context.fillStyle = "#FF0033";
-    context.fillRect(this.x, this.y, this.width, this.height);
+    context.fillStyle = "#FF0000";
+    context.fillRect(50, this.y, this.width, this.height);
 };
 
 // RENDER PADDLE 2 FUNCTION
 Paddle2.prototype.render = function () {
-    context.fillStyle = "#FF0033";
-    context.fillRect(this.x, this.y, this.width, this.height);
+    context.fillStyle = "#FF0000";
+    context.fillRect(850, this.y, this.width, this.height);
 };
 
 // RENDER PADDLE 3 FUNCTION
 Paddle3.prototype.render = function () {
-    context.fillStyle = "#FF0033";
-    context.fillRect(this.x, this.y, this.width, this.height);
+    context.fillStyle = "#FF0000";
+    context.fillRect(this.x, 50, this.height, this.width);
 };
 
 // RENDER PADDLE 4 FUNCTION
 Paddle4.prototype.render = function () {
-    context.fillStyle = "#FF0033";
-    context.fillRect(this.x, this.y, this.width, this.height);
+    context.fillStyle = "#FF0000";
+    context.fillRect(this.x, 850, this.height, this.width);
 };
 
 // PADDLE MOVEMENT

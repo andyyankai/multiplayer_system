@@ -31,12 +31,6 @@ void Pong::init() {
 	p2.v.y = 6;
 	p3.v.x = 6;
 	p4.v.x = 6;
-	
-	lag1 = 0;
-	lag2 = 0;
-	lag3 = 0;
-	lag4 = 0;
-	
 }
 
 bool Pong::Intersect(double x, double y, double w, double h, double ballx, double bally, double ballw, double ballh) {
@@ -44,7 +38,7 @@ bool Pong::Intersect(double x, double y, double w, double h, double ballx, doubl
 }
 //ballw,ballh width and height is the ball's radius*2
 
-void Pong::movePlayer(unsigned int user, unsigned int keyCode)
+void Pong::movePlayer(unsigned int user, unsigned int keyCode, unsigned int latency)
 {
 	player*pt = nullptr;
 	playerMiddle*pt2 = nullptr;
@@ -74,6 +68,7 @@ void Pong::movePlayer(unsigned int user, unsigned int keyCode)
 			pt2->x += pt2->v.x;
 		}
 		pt2->x = fmax(fmin(pt2->x, width - pt2->width), 0);
+		pt2->latency = latency;
 
 	}
 	else if (pt != nullptr)
@@ -90,6 +85,7 @@ void Pong::movePlayer(unsigned int user, unsigned int keyCode)
 
 		}
 		pt->y = fmax(fmin(pt->y, height - pt->height), 0);
+		pt->latency = latency;
 
 	}
 }
@@ -194,6 +190,6 @@ bool Pong::update()
 }
 std::ostringstream Pong::trackmovement() {
 	std::ostringstream os;
-	os << p.x << "," << p.y << "," << p2.x << "," << p2.y << "," << p3.x << "," << p3.y << "," << p4.x << "," << p4.y << "," << b.x << "," << b.y << "," << s.p << "," << s.p2 << "," << s.p3 << "," << s.p4;
+	os << p.x << "," << p.y << "," << p2.x << "," << p2.y << "," << p3.x << "," << p3.y << "," << p4.x << "," << p4.y << "," << b.x << "," << b.y << "," << s.p << "," << s.p2 << "," << s.p3 << "," << s.p4 << "," << p.latency << "," << p2.latency << "," << p3.latency << "," << p4.latency;
 	return os;
 }

@@ -1,0 +1,510 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+    <meta charset='UTF-8' />
+    <title>Pong</title>
+    <style>
+        input, textarea {border:1px solid #990033; margin:5px;padding:0px}
+	#body {max-width:850px; margin:auto; color:mediumpurple}
+	body {
+
+	    background-color:#111111;;
+	    background-repeat: repeat;
+	}
+	
+	.container {
+		color: #ff0000;
+		position: absolute;
+	    border: 2px solid #2700e8;
+	    background-color: #000000;
+	    border-radius: 5px;
+	    padding: 10px;
+	    margin: 10px 0;
+	    width: 250px;
+	    height: 250px;
+	}
+
+	.darker {
+	    border-color: #ccc;
+	    background-color: #ddd;
+	}
+
+	.container::after {
+	    content: "";
+	    clear: both;
+	    display: table;
+	}
+
+	.time-right {
+	    float: right;
+	    color: #F44;
+	}
+
+	.log-text {
+		margin-top: 5px;
+		height: 90%;
+		width: 100%;
+		padding-top: 10px;
+		overflow-y:scroll;
+		
+
+	}
+	
+	::-webkit-scrollbar {
+	    width: 10px;
+	}
+
+	/* Track */
+	::-webkit-scrollbar-track {
+	    box-shadow: inset 0 0 5px grey; 
+	    border-radius: 10px;
+	}
+	 
+	/* Handle */
+	::-webkit-scrollbar-thumb {
+	    background: red; 
+	    border-radius: 10px;
+	}
+
+	/* Handle on hover */
+	::-webkit-scrollbar-thumb:hover {
+	    background: #b30000; 
+	}
+
+	.title {
+		color:blue; font-size:75px; font-family:Consolas; margin-top:5px; margin-bottom:0px;
+		font-family: futura;
+		font-style: italic;
+		width:100%;
+		margin: 0 auto;
+		text-align: center;      
+		color:#313131;
+		-webkit-animation:colorchange 5s infinite alternate;
+      
+      
+	    }
+
+	    @-webkit-keyframes colorchange {
+	      0% {
+		
+		color: blue;
+	      }
+	      
+	      10% {
+		
+		color: #8e44ad;
+	      }
+	      
+	      20% {
+		
+		color: #1abc9c;
+	      }
+	      
+	      30% {
+		
+		color: #d35400;
+	      }
+	      
+	      40% {
+		
+		color: blue;
+	      }
+	      
+	      50% {
+		
+		color: #34495e;
+	      }
+	      
+	      60% {
+		
+		color: blue;
+	      }
+	      
+	      70% {
+		
+		color: #2980b9;
+	      }
+	      80% {
+	     
+		color: #f1c40f;
+	      }
+	      
+	      90% {
+	     
+		color: #2980b9;
+	      }
+	      
+	      100% {
+		
+		color: pink;
+	      }
+		
+	}
+	
+	.setting-box {
+	    
+	}
+	
+	.submit-bot {
+	    padding-right: 50px;
+	    text-align: center;
+	    width: 30%;
+	    background-color: #013307;
+	    color: #ff0000;
+	    font-size: 30px;
+	    font-weight: bold;
+	    padding: 14px 20px;
+	    margin: 8px 0;
+	    border: none;
+	    border-radius: 30px;
+	    cursor: pointer;
+	}
+	
+	input[type=text], textarea {
+	  -webkit-transition: all 0.30s ease-in-out;
+	  -moz-transition: all 0.30s ease-in-out;
+	  -ms-transition: all 0.30s ease-in-out;
+	  -o-transition: all 0.30s ease-in-out;
+	  outline: none;
+	  padding: 3px 0px 3px 3px;
+	  margin: 5px 1px 3px 0px;
+	  border: 1px solid #990033;
+	  border-radius: 10px;
+	}
+	 
+	input[type=text]:focus, textarea:focus {
+	  box-shadow: 0 0 5px rgba(81, 203, 238, 1);
+	  padding: 3px 0px 3px 3px;
+	  margin: 5px 1px 3px 0px;
+	  border: 5px solid rgba(81, 203, 238, 1);
+	  border-radius: 25px;
+	}
+	
+	.select-title {
+		margin-top: 5px;
+		color : #ff2828;
+	}
+	.textarea {
+	  border-color: #EEEEEE;
+	  border-style: solid;
+	  border-width: 2px;
+	  width: 95%;
+	  min-height: 550px;
+	  padding: 30px;
+	  margin-top: 28px;
+	  font-family: Times-Italic;
+	  font-size: 19px;
+	  line-height: 27px;
+	  text-align: left;
+	  resize: none;
+	  color: rgba(113,113,113, 0.5);
+	  background: transparent;
+	}
+	
+	.game-box {
+		border-color: #d412c5;
+	  border-style: dotted;
+	  border-width: 2px;
+	}
+    </style>
+</head>
+
+<body align="center">
+<div class="container">
+  <span class="time-middle">Game Log</span>
+  <p class="log-text" id='log' name='log'><br></p>
+</div>
+
+    <center>
+
+        <div class="title"> PONG GAME </div>
+        <div style="width:400px; height:130px; border:3px dashed #fb0b0b;">
+		<p> <font size="2" face="monospace" color="#00FFFF"> CREATORS:<br />Kai Yan #24684490<br />Xiyu Wang #19001614<br />Yuanqin Fan #34137914<br />Yian Li #68342735</font></p>
+        </div>
+        
+    </center>
+
+
+    <div>
+        <div class="select-title">Server ip</div>
+        
+        <input style="background-color: #3CBC8D;" type='text' id='ip' name='ip' />
+        <script type="text/javascript">
+			var elem = document.getElementById("ip");
+			elem.value = "127.0.0.1";
+        </script>
+
+
+        <div class="select-title">Server port</div>
+        
+        <input style="background-color: #3CBC8D;"type='text' id='port' name='port' />
+        <script type="text/javascript">
+			var elem = document.getElementById("port");
+			elem.value = "8000";
+        </script>
+
+        <div class="select-title">Game ID</div>
+        
+        <input style="background-color: #3CBC8D;" type='text' id='gameid' name='gameid' />
+
+    </div>
+    <div align="center">
+    	<div class="submit-bot" id='cntBtn' onclick="connect();">Connect
+    	</div>
+    </div>
+    
+    
+    <div class="game-box" id="game_canvas">
+    <script src="gameui.js"></script>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="gameui.js"></script>
+    <script src="fancywebsocket.js"></script>
+    <script>
+   
+    		var ar=new Array(33,34,35,36,37,38,39,40);
+
+		$(document).keydown(function(e) {
+		     var key = e.which;
+		      //console.log(key);
+		      //if(key==35 || key == 36 || key == 37 || key == 39)
+		      if($.inArray(key,ar) > -1) {
+			  e.preventDefault();
+			  return false;
+		      }
+		      return true;
+		});
+
+
+		var Server;
+		var input_sequence_num = 0;
+		var client_input;
+		var pending_inputs_p1 = [];
+		var pending_inputs_p2 = [];
+		var pending_inputs_p3 = [];
+		var pending_inputs_p4 = [];
+
+		var Players_ready = false;
+		var Players_Number = 0;
+		var gameState = false;
+		var upArrow = 38;
+		var leftArrow = 37;
+		var downArrow = 40;
+		var rightArrow = 39;
+		var debug = false;
+		var offset = 0;
+		function log( text ) {
+			$log = $('#log');
+			//Add text to log
+			$log.append(($log.val()?"\n":'')+text);
+			//Autoscroll
+			$log[0].scrollTop = $log[0].scrollHeight - $log[0].clientHeight;
+		}
+
+		function send( text ) {
+			Server.send( 'message', text );
+		}
+
+        function connect(){
+        
+        	if (gameState == true)
+        	{
+        		document.getElementById("cntBtn").disabled = false;
+			    document.getElementById("cntBtn").innerHTML = "Connect"
+			    window.scrollTo(0, 0);
+			    Server.disconnect();
+			    gameState = false;
+        	}
+        	else
+        	{
+
+            log('Connecting...<br>');
+			Server = new FancyWebSocket('ws://' + document.getElementById('ip').value + ':' + document.getElementById('port').value);
+
+			$(document).keydown(function(event) {
+
+				//log(Players_ready,'Players_ready<br>');
+
+				if(Players_ready)
+				{
+
+				    if (event.which == upArrow || event.which == downArrow) {
+				    	offset += event.which == upArrow ? -15 : 15;
+
+				        if (Players_Number == 0)
+				        {
+					        //if p1
+		                    //client prediction p1
+
+				        	player.update(parseInt(40), parseInt(250), player.old_x, player.old_y, offset);	
+
+				        	//prepare sequence number
+				        	input_sequence_num++;
+				        	client_input = event.which;
+					        var d = new Date();
+					        send(d.getTime() + "," + event.which + "," + input_sequence_num);
+				    		pending_inputs_p1.push((client_input,input_sequence_num));
+				        }
+
+				        if (Players_Number == 1)
+				        {
+					        //if p2
+					        //client prediction p2
+
+				        	player2.update(parseInt(740), parseInt(250), player2.old_x, player2.old_y, offset);
+
+				        	//prepare sequence number
+				        	input_sequence_num++;
+				        	client_input = event.which;
+					        var d = new Date();
+					        send(d.getTime() + "," + event.which + "," + input_sequence_num);
+				    		pending_inputs_p2.push((client_input,input_sequence_num));
+				        }	
+				        
+
+				    }
+				    else if(event.which==leftArrow||event.which==rightArrow)
+				    {
+				    	offset += event.which == leftArrow ? -15 : 15;
+				        if (Players_Number == 2)
+				        {
+					        //if p3
+					        //client prediction p3
+
+				        	player3.update(parseInt(350), parseInt(40), player3.old_x, player3.old_y, offset);
+
+				        	//prepare sequence number
+				        	input_sequence_num++;
+				        	client_input = event.which;
+					        var d2 = new Date();
+					        send(d2.getTime() + "," + event.which + "," + input_sequence_num);
+				    		pending_inputs_p3.push((client_input,input_sequence_num));
+				        }
+
+				        if (Players_Number == 3)
+				        {
+					        //if p4
+					        //client prediction p4
+
+				        	player4.update(parseInt(350), parseInt(540), player4.old_x, player4.old_y, offset);
+
+				        	//prepare sequence number
+				        	input_sequence_num++;
+				        	client_input = event.which;
+					        var d2 = new Date();
+					        send(d2.getTime() + "," + event.which + "," + input_sequence_num);
+				    		pending_inputs_p4.push((client_input,input_sequence_num));
+				        }
+				    }
+			    }
+			});
+
+			//Let the user know we're connected
+			Server.bind('open', function() {
+                document.getElementById("cntBtn").disabled = true;
+                document.getElementById("cntBtn").innerHTML = "Disconnect"
+                log("Connected.<br>");
+                send(document.getElementById('gameid').value);
+			});
+
+			//OH NOES! Disconnection occurred.
+			Server.bind('close', function( data ) {
+                document.getElementById("cntBtn").disabled = false;
+                document.getElementById("cntBtn").innerHTML = "Connect"
+				log( "Disconnected.<br>" );
+			});
+
+			//Log any messages sent from server
+			Server.bind('message', function( payload ) {
+			    if (payload =="connection refused, 4 players are already playing;<br>") {
+			        log(payload); 
+			        log("<br>");
+			    }
+			    else if (payload.indexOf("Move confirmed") > -1) {
+			        var res = payload.split(",");
+			        offset += res[1] == upArrow ? 15 : -15;
+			        offset2 += res[1] == leftArrow ? 15 : -15;
+
+			    }
+			    else if (payload.indexOf("New Round") > -1) {
+			        offset = 0;
+			        if (Players_Number == 0)
+			        	player.update(parseInt(40), parseInt(250), parseInt(40), parseInt(250), offset);
+
+			        if (Players_Number == 1)
+			        	player2.update(parseInt(740), parseInt(250), parseInt(740), parseInt(250),offset);
+
+			        if (Players_Number == 2)
+			        	player3.update(parseInt(350), parseInt(40), parseInt(350), parseInt(40),offset);
+
+			        if (Players_Number == 3)
+			        	player4.update(parseInt(350), parseInt(540), parseInt(350), parseInt(540), offset);
+			   
+			    }
+			    else if (gameState) {
+			        if (debug) {
+			            log(payload);
+			        }
+			        var res = payload.split(",");
+
+			        Players_ready = true;
+
+			        ball.update(res[8], res[9], ball.old_x, ball.old_y);
+
+			        // res[18],res[19],res[20],res[21] p1,p2,p3,p4的move sequence number
+
+			        if (res[26] == 0) {
+			        	Players_Number = 0;
+			        	//player.update(40, parseInt(res[1]), player.old_x, player.old_y, 0);
+			            player2.update(740, parseInt(res[3]), player2.old_x, player2.old_y, 0);
+			            player3.update(parseInt(res[4]), 40, player3.old_x, player3.old_y,0);
+			            player4.update(parseInt(res[6]), 540, player4.old_x, player4.old_y,0);
+
+			        }
+			        if (res[26] == 1) {
+			        	Players_Number = 1;
+			            player.update(40, parseInt(res[1]), player.old_x, player.old_y, 0);
+			            //player2.update(parseInt(res[2]), parseInt(res[3]), offset);
+			            player3.update(parseInt(res[4]), 40, player3.old_x, player3.old_y, 0);
+			            player4.update(parseInt(res[6]), 540, player4.old_x, player4.old_y, 0);
+
+			        }
+			        if (res[26] == 2) {
+			        	Players_Number = 2;
+			            player.update(40, parseInt(res[1]), player.old_x, player.old_y, 0);
+			            player2.update(740, parseInt(res[3]), player2.old_x, player2.old_y, 0);
+			            //player3.update(parseInt(res[4]), parseInt(res[5]), offset2);
+			            player4.update(parseInt(res[6]), 540, player4.old_x, player4.old_y, 0);
+
+			        }
+			        if (res[26] == 3) {
+			        	Players_Number = 3;
+			            player.update(40, parseInt(res[1]), player.old_x, player.old_y, 0);
+			            player2.update(740, parseInt(res[3]), player2.old_x, player2.old_y, 0);
+			            player3.update(parseInt(res[4]), 40, player3.old_x, player3.old_y, 0);
+			            //player4.update(parseInt(res[6]), parseInt(res[7]), offset2);
+
+			        }
+			        console.log(res);
+
+			        score.update(res[22], res[23], res[24], res[25], res[10], res[11], res[12], res[13]); 
+
+			        ping.update(res[14], res[15], res[16], res[17]);
+			        //score(playername,score)
+
+			    }
+			    else {
+			        log(payload);
+			        log("<br>")
+			        gameState = true;
+			    }
+			});
+
+			Server.connect();
+			}
+        }
+    </script>
+</body>
+
+</html>
